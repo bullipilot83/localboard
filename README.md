@@ -1,5 +1,7 @@
 # localboard
 
+**Deutsch** | [English](README.en.md)
+
 local web dashboard, without any hosting or installation
 
 **Version 1.1** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
