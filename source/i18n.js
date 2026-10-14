@@ -119,7 +119,10 @@ const catalogs = {
     "helpUsageTitle": "Bedienung",
     "helpUsage": "Jede Gruppe ist ein Tab. Im Bearbeitungsmodus ordnen ↑ und ↓ die Gruppen ihrer Ebene. Untergruppen bleiben zugeordnet. Kartenlinks ziehen oder fokussieren und mit Pfeiltasten verschieben. X/Y sind auch im Link-Dialog editierbar. Die Sprache oben wählen; eigene Namen bleiben unverändert.",
     "otherTabChanged": "Dashboard in anderem Browser-Tab geändert. Vor weiterer Bearbeitung neu laden. Eigene ungesicherte Änderungen vorher exportieren.",
-    "welcome": "Willkommen. Die Beispielgruppen kannst du im Bearbeitungsmodus umbenennen. Füge deinen ersten Link mit ＋ hinzu."
+    "welcome": "Willkommen. Die Beispielgruppen kannst du im Bearbeitungsmodus umbenennen. Füge deinen ersten Link mit ＋ hinzu.",
+    "editDashboardTitle": "Titel bearbeiten",
+    "dashboardTitle": "Dashboard-Titel",
+    "titleNote": "Leer lassen, um den Standardtitel der gewählten Sprache zu verwenden. Ein eigener Titel bleibt beim Sprachwechsel unverändert."
   },
   "en": {
     "pageTitle": "Localboard · Your start page",
@@ -238,7 +241,10 @@ const catalogs = {
     "helpUsageTitle": "Controls",
     "helpUsage": "Each group is a tab. In edit mode, ↑ and ↓ reorder groups within their level. Subgroups stay attached. Drag map links or focus them and use arrow keys. X/Y can also be edited in the link dialog. Choose a language at the top; custom names stay unchanged.",
     "otherTabChanged": "Dashboard changed in another browser tab. Reload before editing further. Export any unsaved changes first.",
-    "welcome": "Welcome. Rename the example groups in edit mode. Add your first link with ＋."
+    "welcome": "Welcome. Rename the example groups in edit mode. Add your first link with ＋.",
+    "editDashboardTitle": "Edit title",
+    "dashboardTitle": "Dashboard title",
+    "titleNote": "Leave empty to use the default title in the selected language. A custom title stays unchanged when switching languages."
   },
   "fr": {
     "pageTitle": "Localboard · Votre page d’accueil",
@@ -357,7 +363,10 @@ const catalogs = {
     "helpUsageTitle": "Utilisation",
     "helpUsage": "Chaque groupe est un onglet. En mode édition, ↑ et ↓ réorganisent les groupes du même niveau. Les sous-groupes restent associés. Glissez les liens sur la carte ou sélectionnez-les et utilisez les flèches. X/Y sont aussi modifiables dans le dialogue du lien. Choisissez la langue en haut ; les noms personnalisés restent inchangés.",
     "otherTabChanged": "Le tableau de bord a changé dans un autre onglet. Rechargez avant de poursuivre. Exportez d’abord vos modifications non enregistrées.",
-    "welcome": "Bienvenue. Renommez les groupes d’exemple en mode édition. Ajoutez votre premier lien avec ＋."
+    "welcome": "Bienvenue. Renommez les groupes d’exemple en mode édition. Ajoutez votre premier lien avec ＋.",
+    "editDashboardTitle": "Modifier le titre",
+    "dashboardTitle": "Titre du tableau de bord",
+    "titleNote": "Laissez vide pour utiliser le titre par défaut dans la langue sélectionnée. Un titre personnalisé reste inchangé lors du changement de langue."
   },
   "es": {
     "pageTitle": "Localboard · Tu página de inicio",
@@ -476,7 +485,10 @@ const catalogs = {
     "helpUsageTitle": "Uso",
     "helpUsage": "Cada grupo es una pestaña. En modo edición, ↑ y ↓ ordenan los grupos del mismo nivel. Los subgrupos permanecen asociados. Arrastra los enlaces del mapa o selecciónalos y usa las flechas. X/Y también se editan en el diálogo del enlace. Elige el idioma arriba; los nombres propios no cambian.",
     "otherTabChanged": "El panel cambió en otra pestaña. Recarga antes de seguir editando. Exporta primero los cambios sin guardar.",
-    "welcome": "Bienvenido. Renombra los grupos de ejemplo en modo edición. Añade tu primer enlace con ＋."
+    "welcome": "Bienvenido. Renombra los grupos de ejemplo en modo edición. Añade tu primer enlace con ＋.",
+    "editDashboardTitle": "Editar título",
+    "dashboardTitle": "Título del panel",
+    "titleNote": "Déjalo vacío para usar el título predeterminado del idioma seleccionado. Un título personalizado no cambia al cambiar de idioma."
   },
   "it": {
     "pageTitle": "Localboard · La tua pagina iniziale",
@@ -595,7 +607,10 @@ const catalogs = {
     "helpUsageTitle": "Utilizzo",
     "helpUsage": "Ogni gruppo è una scheda. In modalità modifica, ↑ e ↓ riordinano i gruppi dello stesso livello. I sottogruppi restano associati. Trascina i link sulla mappa o selezionali e usa le frecce. X/Y sono modificabili anche nel dialogo del link. Scegli la lingua in alto; i nomi personalizzati non cambiano.",
     "otherTabChanged": "La dashboard è cambiata in un’altra scheda. Ricarica prima di continuare. Esporta prima le modifiche non salvate.",
-    "welcome": "Benvenuto. Rinomina i gruppi di esempio in modalità modifica. Aggiungi il tuo primo link con ＋."
+    "welcome": "Benvenuto. Rinomina i gruppi di esempio in modalità modifica. Aggiungi il tuo primo link con ＋.",
+    "editDashboardTitle": "Modifica titolo",
+    "dashboardTitle": "Titolo della dashboard",
+    "titleNote": "Lascia vuoto per usare il titolo predefinito nella lingua selezionata. Un titolo personalizzato non cambia quando cambi lingua."
   },
   "nl": {
     "pageTitle": "Localboard · Jouw startpagina",
@@ -714,7 +729,10 @@ const catalogs = {
     "helpUsageTitle": "Bediening",
     "helpUsage": "Elke groep is een tabblad. In bewerkingsmodus sorteren ↑ en ↓ groepen op hetzelfde niveau. Subgroepen blijven gekoppeld. Sleep kaartlinks of geef ze focus en gebruik de pijltoetsen. X/Y zijn ook aanpasbaar in het linkvenster. Kies bovenaan een taal; eigen namen blijven ongewijzigd.",
     "otherTabChanged": "Dashboard gewijzigd in een ander tabblad. Laad opnieuw voordat je verder bewerkt. Exporteer eerst niet-opgeslagen wijzigingen.",
-    "welcome": "Welkom. Hernoem de voorbeeldgroepen in bewerkingsmodus. Voeg je eerste link toe met ＋."
+    "welcome": "Welkom. Hernoem de voorbeeldgroepen in bewerkingsmodus. Voeg je eerste link toe met ＋.",
+    "editDashboardTitle": "Titel bewerken",
+    "dashboardTitle": "Dashboardtitel",
+    "titleNote": "Laat leeg om de standaardtitel in de gekozen taal te gebruiken. Een eigen titel blijft ongewijzigd bij het wisselen van taal."
   }
 };
 const names = {de:'Deutsch',en:'English',fr:'Français',es:'Español',it:'Italiano',nl:'Nederlands'};

@@ -4,7 +4,7 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.2** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
+**Version 1.2.1** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
 
 ## Schnellstart
 
@@ -24,6 +24,14 @@ Oben lässt sich die Sprache jederzeit auswählen. Die Auswahl bleibt im
 Browserspeicher erhalten und wird mit JSON- und HTML-Exporten übertragen.
 Eigene Namen sowie bereits gespeicherte Beispielgruppen werden nicht übersetzt.
 Ältere Sicherungen ohne Spracheinstellung übernehmen die aktuell ausgewählte Sprache.
+
+## Dashboard-Titel
+
+In der **Übersicht** den Bearbeitungsmodus aktivieren und neben der Überschrift
+**Titel bearbeiten** wählen. Ein eigener Titel bleibt in allen Sprachen gleich.
+Das Feld leeren und speichern, um wieder den automatisch übersetzten Standardtitel
+zu verwenden. Alte gespeicherte Standardtitel werden automatisch umgestellt;
+bereits vorhandene individuelle Titel bleiben erhalten.
 
 ## Funktionen
 
@@ -95,7 +103,7 @@ neue Anwendung übernehmen. JSON-Sicherungen aus Version 1.0 und 1.1 bleiben kom
 ## Prüfung
 
 JavaScript-Syntax, Datenvalidierung, JSON-Roundtrip und Gruppensortierung wurden
-automatisiert geprüft. Zusätzlich prüfen 14 Tests die Übersetzungskataloge,
+automatisiert geprüft. Zusätzlich prüfen automatisierte Tests die Übersetzungskataloge,
 Spracherkennung, Sprachwechsel, Dialogtexte, Datenübernahme und das eingebettete
 Sprachpaket. Die Oberflächentests verwenden einen minimalen DOM-Adapter; ein
 interaktiver Browser-End-to-End-Test steht noch aus.

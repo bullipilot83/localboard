@@ -160,3 +160,71 @@ test('standalone build embeds all catalogs before application code without exter
  assert.ok(bundle.includes(catalogCode));assert.ok(bundle.includes(appCode));
  for(const match of bundle.matchAll(/<script(?:\s+[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(match[1]);
 });
+
+test('default dashboard title follows all six languages and old defaults migrate',()=>{
+ const app=boot({browser:['de']});
+ for(const language of languages){
+  app.get('#language').onchange({target:{value:language}});
+  assert.equal(app.get('#title').textContent,i18n.translate(language,'defaultTitle'));
+  const legacy=clone(app.run('data'));delete legacy.titleMode;legacy.title=i18n.translate(language,'defaultTitle');
+  const restored=boot({browser:['en'],saved:JSON.stringify(legacy)});
+  assert.equal(restored.run('data.titleMode'),'auto');
+  restored.get('#language').onchange({target:{value:'nl'}});
+  assert.equal(restored.get('#title').textContent,i18n.translate('nl','defaultTitle'));
+ }
+});
+
+test('custom title editing is gated, saved, preserved on language change and resettable',async()=>{
+ const app=boot({browser:['de']});
+ app.get('#editTitle').onclick();assert.notEqual(app.get('#modal').open,true);
+ app.get('#lock').onclick();app.get('#editTitle').onclick();
+ assert.equal(app.get('#dialogTitle').textContent,i18n.translate('de','editDashboardTitle'));
+ app.get('#dashboardTitleInput').value='  Mein Haus & Garten  ';
+ await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.get('#title').textContent,'Mein Haus & Garten');
+ const saved=app.values.get('localboard.v1.default');
+ assert.equal(JSON.parse(saved).titleMode,'custom');
+ const reopened=boot({saved});assert.equal(reopened.get('#title').textContent,'Mein Haus & Garten');
+ for(const language of languages){app.get('#language').onchange({target:{value:language}});assert.equal(app.get('#title').textContent,'Mein Haus & Garten');}
+ app.get('#editTitle').onclick();app.get('#dashboardTitleInput').value='  ';
+ await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.run('data.titleMode'),'auto');
+ assert.equal(app.get('#title').textContent,i18n.translate('nl','defaultTitle'));
+});
+
+test('legacy custom title and explicitly custom default-looking title are preserved',()=>{
+ const source=boot({browser:['de']});const custom=clone(source.run('data'));
+ delete custom.titleMode;custom.title='Haus 1';
+ const legacy=boot({saved:JSON.stringify(custom)});
+ assert.equal(legacy.run('data.titleMode'),'custom');
+ legacy.get('#language').onchange({target:{value:'es'}});
+ assert.equal(legacy.get('#title').textContent,'Haus 1');
+ custom.title='Meine Startseite';custom.titleMode='custom';
+ const explicit=boot({saved:JSON.stringify(custom)});
+ explicit.get('#language').onchange({target:{value:'en'}});
+ assert.equal(explicit.get('#title').textContent,'Meine Startseite');
+});
+
+test('dashboard title controls are only shown on overview; group names stay unchanged',()=>{
+ const app=boot();app.run(`data.groups[0].name='Haus 2';navigate('site-a')`);
+ assert.equal(app.get('#editTitle').hidden,true);
+ assert.equal(app.get('#title').textContent,'Haus 2');
+ app.get('#language').onchange({target:{value:'fr'}});
+ assert.equal(app.get('#title').textContent,'Haus 2');
+ app.run(`navigate('all')`);assert.equal(app.get('#editTitle').hidden,false);
+ assert.equal(app.get('#title').textContent,i18n.translate('fr','defaultTitle'));
+});
+
+test('JSON export/import and HTML seed keep explicit title mode and custom title',async()=>{
+ const app=boot();app.run(`data.title='Meine Startseite';data.titleMode='custom';download=(name,content)=>{globalThis.exported=content;}`);
+ app.get('#export').onclick();app.get('#jsonExport').onclick();
+ const exported=JSON.parse(app.context.exported);
+ assert.equal(exported.titleMode,'custom');
+ const imported=boot({browser:['fr']});imported.get('#lock').onclick();
+ await imported.get('#importFile').onchange({target:{files:[{size:500,text:async()=>JSON.stringify(exported)}],value:''}});
+ imported.get('#language').onchange({target:{value:'it'}});
+ assert.equal(imported.get('#title').textContent,'Meine Startseite');
+ const portable=boot({browser:['nl'],seed:exported});
+ portable.get('#language').onchange({target:{value:'nl'}});
+ assert.equal(portable.get('#title').textContent,'Meine Startseite');
+});

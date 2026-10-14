@@ -17,3 +17,7 @@ header{flex-wrap:wrap;padding:15px 0}
 .heading .primary{flex-shrink:0}
 @media(max-width:900px){.actions{justify-content:flex-start}}
 @media(max-width:600px){.views{flex-wrap:wrap}.language-control{font-size:11px}}
+
+.title-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.title-row h1{overflow-wrap:anywhere;min-width:0}
+.title-row button{font-size:12px}

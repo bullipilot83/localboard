@@ -4,7 +4,7 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.2** · A portable browser dashboard for links, systems, and locations.
+**Version 1.2.1** · A portable browser dashboard for links, systems, and locations.
 
 ## Quick start
 
@@ -24,6 +24,13 @@ top to switch at any time. Your choice is saved in browser storage and included
 in both JSON and HTML exports. Custom names and previously saved example groups
 are never translated. Older backups without a language setting inherit the
 currently selected language.
+
+## Dashboard title
+
+Open **Overview**, enable edit mode and select **Edit title** next to the heading.
+A custom title stays the same in every language. Clear the field and save to
+restore the automatically translated default. Older saved default titles are
+migrated automatically; existing custom titles are preserved.
 
 ## Features
 
@@ -98,7 +105,7 @@ new application using JSON. JSON backups from versions 1.0 and 1.1 remain compat
 ## Validation
 
 JavaScript syntax, data validation, JSON round-tripping, and group ordering have
-been checked automatically. An additional 14 tests cover translation catalogs,
+been checked automatically. Additional automated tests cover translation catalogs,
 language detection and switching, dialog text, data migration and the embedded
 language bundle. UI logic tests use a minimal DOM adapter; interactive browser
 end-to-end testing is still pending. Before production use, test local storage, images, and both export
