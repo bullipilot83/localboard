@@ -1,0 +1,6 @@
+.DS_Store
+Thumbs.db
+node_modules/
+# Locally exported dashboard data
+Localboard-*.json
+Localboard-Standalone*.html

@@ -1,0 +1,96 @@
+LOCALBOARD 1.1 – PORTABLES DASHBOARD
+==================================
+
+START
+ZIP vollständig entpacken. startpage.html per Doppelklick öffnen.
+Keine Installation, kein Docker, kein Webserver, keine CDN-Abhängigkeiten.
+Die Anwendung selbst funktioniert offline; verlinkte Ziele benötigen natürlich
+Netzwerkzugriff. Favicons werden nur nach Aktivierung beim jeweiligen Ziel geladen.
+
+BEDIENUNG
+- Plus: Link hinzufügen. Ohne Protokoll wird http:// ergänzt.
+- Webadresse aus der Adressleiste auf das Dashboard ziehen. Der Browser muss
+  den Drag als URL liefern. Alternativ Adresse mit Plus eintragen.
+- Bearbeiten aktivieren und bestätigen: Links/Gruppen ändern und löschen.
+  Vor Löschungen erscheint eine zusätzliche Bestätigung. Beim Neustart ist
+  Bearbeiten aus. Dies ist ein Bedienungsschutz, keine Authentifizierung.
+- Gruppe / Tab: frei benennen und optional eine übergeordnete Gruppe wählen.
+  Untergruppen sind beliebig verschachtelbar; jede Gruppe ist einzeln aufrufbar.
+  Eine Gruppe zeigt auch die Links ihrer Untergruppen an.
+- Gruppen anordnen: Bearbeiten aktivieren. In der linken Seitenleiste stehen
+  neben jeder Gruppe die Pfeile ↑ und ↓. Sie verschieben die Gruppe innerhalb
+  ihrer Ebene. Untergruppen bleiben zugeordnet. Reihenfolge gilt für Seitenleiste,
+  Tabs und Gruppenabschnitte und wird lokal sowie im Export gespeichert.
+  Beispiel: Haus 2 mit ↑ vor Haus 3 verschieben.
+- Kacheln oder Liste: gruppierte Darstellung. Im Bearbeitungsmodus innerhalb
+  derselben Gruppe per Drag & Drop sortieren. Gruppe eines Links im Dialog ändern.
+- Karte: Gruppe wählen, Bearbeiten aktivieren, Kartenbild laden.
+  Ein Bild pro Gruppe, proportional angezeigt; gespeichert bis max. 2000 Pixel.
+  Links ziehen, mit Pfeiltasten bewegen oder X/Y im Dialog eingeben.
+  Positionen gehören zum Link und werden auch in übergeordneten Ansichten genutzt.
+  Neue Links starten bei 50/50. Überlappungen durch Verschieben auflösen.
+- Icons: PNG/JPG/WebP hochladen; werden bis max. 96 Pixel eingebettet.
+  Alternativ Favicon aktivieren. Versuch über /favicon.ico direkt am Zielserver.
+  Kein automatisches Auslesen beliebiger Webseiten-Metadaten; fehlende/gesperrte
+  Favicons werden durch Anfangsbuchstaben ersetzt. Eigene Icons haben Vorrang.
+- Suche filtert Namen, Adressen und Gruppenpfade der ausgewählten Gruppe.
+- Links öffnen in einem neuen Browser-Tab. Im Bearbeitungsmodus bearbeitbar.
+
+SPEICHERUNG UND UMZUG
+Browserprofil + Dateipfad sind für die lokale Speicherung relevant. Daten werden
+NICHT automatisch in den Projektordner geschrieben. file://-Browserspeicherung
+ist browserabhängig. Bei vollem/gesperrtem Speicher erscheint eine Warnung;
+dann sofort exportieren. Große/viele Karten können das Browserlimit erreichen.
+Browserdaten löschen oder privaten Modus beenden kann Daten entfernen.
+
+Export > JSON-Sicherung:
+Alle Links, Gruppen, Ansichten, Positionen, eigene Icons und Karten als JSON.
+Auf dem anderen Gerät: Bearbeiten > Import. Import ersetzt das Dashboard nach
+Bestätigung. Vorher eigenes Dashboard sichern. Es gibt keinen Merge.
+
+Export > Portable HTML-Datei:
+Komplette Anwendung mit aktuellem Datenstand in EINER HTML-Datei. Auf anderem
+Gerät direkt öffnen, keine Zusatzdateien notwendig. Fremde Favicons sind nicht
+als Bild eingebettet; diese werden dort erneut vom Ziel abgerufen.
+
+NETZLAUFWERK / ZWEI GERÄTE
+Den HTML-Export auf einem Netzlaufwerk ablegen. Beide Geräte können ihn öffnen.
+Änderungen werden zunächst nur im Browser des bearbeitenden Geräts gespeichert.
+Zum Verteilen erneut HTML exportieren und die gemeinsame Datei manuell ersetzen.
+Eine neue eingebettete Version wird beim Öffnen mit vorhandenem Browserstand
+verglichen; eine Auswahl fragt, ob der lokale Stand behalten werden soll.
+Das ist ein Snapshot-Verfahren, KEIN gemeinsamer Live-Datenspeicher.
+Keine automatische Synchronisation, Dateisperren oder Mehrbenutzer-Konfliktlösung.
+Am besten ein Gerät als Editor festlegen. Parallele Bearbeitung vermeiden.
+Im gleichen Browser erkannte Speicheränderungen anderer Tabs erzeugen eine
+Warnung; ein abweichender Speicherstand wird nicht still überschrieben.
+
+DATEIEN / ANPASSUNG
+startpage.html: empfohlene, vollständig eigenständige Anwendung.
+source/startpage.html + app.js + style.css: ungebündelte, editierbare Quellen.
+Die Quelldateien müssen im gleichen Ordner bleiben. Auch sie starten per
+Doppelklick. Der HTML-Export aus dieser Quellvariante kann bei file:// blockiert
+sein; JSON exportieren und in die eigenständige startpage.html importieren.
+Beide Varianten haben je nach Browser/Dateipfad separate lokale Speicherstände.
+
+GRENZEN UND PRÜFUNG
+Nur HTTP/HTTPS-Links; kein JavaScript, file:// oder eingebettete Zugangsdaten.
+Kein Passwortschutz, keine Rollen, keine Kamera-Livestream-Einbettung.
+Keine Verbindung zur Cloud und keine Telemetrie durch diese Anwendung.
+Syntax sowie Datenvalidierung und JSON-Roundtrip automatisiert geprüft.
+Keine interaktive Browserprüfung in der Erstellungsumgebung möglich gewesen.
+Für den Einsatz zuerst auf deinem Browser testen: Link anlegen, Neustart,
+Kartenbild/Icon, JSON-Export/Import und HTML-Export auf einem zweiten Dateipfad.
+
+Technische Grundlagen:
+https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+https://developer.mozilla.org/en-US/docs/Web/API/Window/showOpenFilePicker
+
+UPDATE VON 1.0 AUF 1.1
+Vor dem Austausch im bisherigen Dashboard Export > JSON-Sicherung wählen.
+Danach die neue startpage.html verwenden. Am gleichen Dateipfad im selben
+Browserprofil bleibt der lokale Speicher normalerweise verfügbar. Falls dein
+Dashboard leer ist oder du eine andere Datei verwendest: Bearbeiten > Import
+und die vorher gesicherte JSON-Datei auswählen. Alte JSON-Sicherungen bleiben
+kompatibel. Ein alter HTML-Export enthält noch den alten Programmcode; er wird
+nicht automatisch aktualisiert. Seine Daten deshalb per JSON übernehmen.

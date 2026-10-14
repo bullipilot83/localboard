@@ -1,0 +1,10 @@
+import {readFile, writeFile} from 'node:fs/promises';
+const root = new URL('../', import.meta.url);
+const [html, css, js] = await Promise.all(['source/startpage.html','source/style.css','source/app.js'].map(path => readFile(new URL(path,root),'utf8')));
+const styleTag = '<link rel="stylesheet" href="style.css">';
+const scriptTag = '<script src="app.js"></script>';
+if (!html.includes(styleTag) || !html.includes(scriptTag)) throw new Error('Expected source asset references are missing.');
+if (/<\/script/i.test(js) || /<\/style/i.test(css)) throw new Error('Source contains a closing HTML tag that cannot be embedded safely.');
+const output = html.replace(styleTag, () => '<style id="appStyle">'+css+'</style>').replace(scriptTag, () => '<script id="appCode">'+js+'</script>');
+await writeFile(new URL('startpage.html',root),output);
+console.log('Created startpage.html');
