@@ -4,7 +4,7 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.1** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
+**Version 1.2** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
 
 ## Schnellstart
 
@@ -14,6 +14,16 @@ local web dashboard, without any hosting or installation
 
 Keine Installation, kein Docker, kein Webserver und keine externen Bibliotheken.
 Die Anwendung funktioniert offline; verlinkte Systeme benötigen Netzwerkzugriff.
+
+## Sprachen
+
+Deutsch, Englisch, Französisch, Spanisch, Italienisch und Niederländisch sind
+vollständig offline enthalten. Beim ersten Start wird die erste unterstützte
+Browsersprache gewählt; ohne passenden Eintrag wird Englisch verwendet.
+Oben lässt sich die Sprache jederzeit auswählen. Die Auswahl bleibt im
+Browserspeicher erhalten und wird mit JSON- und HTML-Exporten übertragen.
+Eigene Namen sowie bereits gespeicherte Beispielgruppen werden nicht übersetzt.
+Ältere Sicherungen ohne Spracheinstellung übernehmen die aktuell ausgewählte Sprache.
 
 ## Funktionen
 
@@ -53,8 +63,10 @@ erscheint der Anfangsbuchstabe. Keine externen Icon-Dienste oder Telemetrie.
 | `startpage.html` | Vollständige Einzeldatei zum direkten Öffnen |
 | `source/startpage.html` | HTML-Quelle mit separatem JavaScript und CSS |
 | `source/app.js` | Anwendungslogik |
+| `source/i18n.js` | Sprachtexte und Spracherkennung für alle sechs Sprachen |
 | `source/style.css` | Gestaltung |
 | `scripts/build.mjs` | Einzeldatei aus den Quellen erzeugen |
+| `tests/i18n.test.mjs` | Tests für Sprachen, Datenmigration und Export |
 | `ANLEITUNG.txt` | Ausführliche Bedienung, Grenzen und Update-Hinweise |
 
 ## Entwicklung
@@ -65,6 +77,7 @@ Einzeldatei neu erzeugen:
 ```sh
 node scripts/build.mjs
 node --check source/app.js
+node --test tests/i18n.test.mjs
 ```
 
 Node.js wird nur für diesen Entwicklungsschritt benötigt. Die fertige Anwendung
@@ -77,12 +90,15 @@ blockiert werden. Für HTML-Exporte die gebündelte `startpage.html` verwenden.
 Vorher **Export → JSON-Sicherung** im bisherigen Dashboard wählen. Danach die
 neue `startpage.html` öffnen und bei Bedarf **Bearbeiten → Import** verwenden.
 Alte HTML-Exporte enthalten den alten Programmcode; deren Daten per JSON in die
-neue Anwendung übernehmen. JSON-Sicherungen aus Version 1.0 bleiben kompatibel.
+neue Anwendung übernehmen. JSON-Sicherungen aus Version 1.0 und 1.1 bleiben kompatibel.
 
 ## Prüfung
 
 JavaScript-Syntax, Datenvalidierung, JSON-Roundtrip und Gruppensortierung wurden
-automatisiert geprüft. Ein interaktiver Browser-End-to-End-Test steht noch aus.
+automatisiert geprüft. Zusätzlich prüfen 14 Tests die Übersetzungskataloge,
+Spracherkennung, Sprachwechsel, Dialogtexte, Datenübernahme und das eingebettete
+Sprachpaket. Die Oberflächentests verwenden einen minimalen DOM-Adapter; ein
+interaktiver Browser-End-to-End-Test steht noch aus.
 Vor produktivem Einsatz lokale Speicherung, Bilder und beide Exportwege mit dem
 verwendeten Browser testen.
 

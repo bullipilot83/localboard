@@ -1,4 +1,4 @@
-LOCALBOARD 1.1 – PORTABLES DASHBOARD
+LOCALBOARD 1.2 – PORTABLES DASHBOARD
 ==================================
 
 START
@@ -94,3 +94,14 @@ Dashboard leer ist oder du eine andere Datei verwendest: Bearbeiten > Import
 und die vorher gesicherte JSON-Datei auswählen. Alte JSON-Sicherungen bleiben
 kompatibel. Ein alter HTML-Export enthält noch den alten Programmcode; er wird
 nicht automatisch aktualisiert. Seine Daten deshalb per JSON übernehmen.
+
+SPRACHEN (VERSION 1.2)
+Oben im Dashboard zwischen Deutsch, Englisch, Französisch, Spanisch, Italienisch
+und Niederländisch wählen. Beim ersten Start gilt die erste unterstützte
+Browsersprache, andernfalls Englisch. Die Auswahl wird lokal gespeichert und in
+JSON- und HTML-Exporten mitgeführt. Alle Übersetzungen funktionieren offline.
+Eigene Namen und bereits gespeicherte Beispielgruppen bleiben unverändert.
+Alte JSON-Sicherungen aus 1.0/1.1 funktionieren weiterhin; fehlt die Sprache,
+wird die aktuelle Auswahl verwendet. Ein alter HTML-Export enthält weiterhin
+die alte Anwendung; seine Daten zuerst als JSON exportieren und in 1.2 importieren.
+Entwickler: source/i18n.js enthält die Sprachtexte, tests/i18n.test.mjs die Tests.

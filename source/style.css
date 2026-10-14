@@ -9,3 +9,11 @@ nav .group-select{display:flex;align-items:center;gap:6px;min-width:0;flex:1;wid
 nav .group-order button{width:24px;padding:5px 0;text-align:center;border:1px solid var(--line);border-radius:6px;color:var(--text)}
 nav .group-order button:disabled{opacity:.25}
 @media(max-width:600px){.group-row{flex:none;padding-left:0}.group-select>span{max-width:150px}nav .group-order button{padding-left:0!important}}
+/* Longer translated labels and the language picker must fit narrow layouts. */
+header{flex-wrap:wrap;padding:15px 0}
+.actions{flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.language-control{display:flex;align-items:center;gap:8px;margin:0;color:var(--muted)}
+.language-control select{width:auto;max-width:160px;margin:0;padding:9px 10px}
+.heading .primary{flex-shrink:0}
+@media(max-width:900px){.actions{justify-content:flex-start}}
+@media(max-width:600px){.views{flex-wrap:wrap}.language-control{font-size:11px}}

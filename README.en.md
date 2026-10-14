@@ -4,18 +4,26 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.1** · A portable browser dashboard for links, systems, and locations.
-
-> The application interface is currently in German. This README includes the original button labels to help you find the controls.
+**Version 1.2** · A portable browser dashboard for links, systems, and locations.
 
 ## Quick start
 
 1. Download the project via **Code → Download ZIP** and extract it.
 2. Open `startpage.html` in your browser.
-3. Click **＋ Link hinzufügen** (Add link) to get started.
+3. Click **＋ Add link** to get started.
 
 No installation, Docker, web server, or external libraries required.
 The application works offline; linked systems require network access.
+
+## Languages
+
+German, English, French, Spanish, Italian and Dutch are included entirely offline.
+On first launch, the first supported browser language is selected; if none
+matches, the application defaults to English. Use the language selector at the
+top to switch at any time. Your choice is saved in browser storage and included
+in both JSON and HTML exports. Custom names and previously saved example groups
+are never translated. Older backups without a language setting inherit the
+currently selected language.
 
 ## Features
 
@@ -56,8 +64,10 @@ are used.
 | `startpage.html` | Complete standalone file, ready to open |
 | `source/startpage.html` | HTML source using separate JavaScript and CSS |
 | `source/app.js` | Application logic |
+| `source/i18n.js` | Translation catalogs and language detection for all six languages |
 | `source/style.css` | Styling |
 | `scripts/build.mjs` | Build the standalone file from the sources |
+| `tests/i18n.test.mjs` | Language, migration and export tests |
 | `ANLEITUNG.txt` | Detailed instructions, limitations, and update notes (German) |
 
 ## Development
@@ -67,6 +77,7 @@ Edit the files in `source/`, then use Node.js to rebuild the standalone file:
 ```sh
 node scripts/build.mjs
 node --check source/app.js
+node --test tests/i18n.test.mjs
 ```
 
 Node.js is only required for this development step. Running the finished
@@ -77,18 +88,20 @@ HTML exports.
 
 ## Updating
 
-First, select **Export → JSON-Sicherung** (JSON backup) in your existing
+First, select **Export → JSON backup** in your existing
 dashboard. Then open the new `startpage.html` and, if necessary, use
-**Bearbeiten → Import** (Edit → Import) to restore your data.
+**Edit → Import** to restore your data.
 
 Old HTML exports contain the old application code. Transfer their data into the
-new application using JSON. JSON backups from version 1.0 remain compatible.
+new application using JSON. JSON backups from versions 1.0 and 1.1 remain compatible.
 
 ## Validation
 
 JavaScript syntax, data validation, JSON round-tripping, and group ordering have
-been checked automatically. Interactive browser end-to-end testing is still
-pending. Before production use, test local storage, images, and both export
+been checked automatically. An additional 14 tests cover translation catalogs,
+language detection and switching, dialog text, data migration and the embedded
+language bundle. UI logic tests use a minimal DOM adapter; interactive browser
+end-to-end testing is still pending. Before production use, test local storage, images, and both export
 formats in your chosen browser.
 
 ## License
