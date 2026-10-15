@@ -122,7 +122,11 @@ const catalogs = {
     "welcome": "Willkommen. Die Beispielgruppen kannst du im Bearbeitungsmodus umbenennen. Füge deinen ersten Link mit ＋ hinzu.",
     "editDashboardTitle": "Titel bearbeiten",
     "dashboardTitle": "Dashboard-Titel",
-    "titleNote": "Leer lassen, um den Standardtitel der gewählten Sprache zu verwenden. Ein eigener Titel bleibt beim Sprachwechsel unverändert."
+    "titleNote": "Leer lassen, um den Standardtitel der gewählten Sprache zu verwenden. Ein eigener Titel bleibt beim Sprachwechsel unverändert.",
+    "expandGroup": "{name} aufklappen",
+    "collapseGroup": "{name} zuklappen",
+    "expandAll": "Alle aufklappen",
+    "collapseAll": "Alle zuklappen"
   },
   "en": {
     "pageTitle": "Localboard · Your start page",
@@ -244,7 +248,11 @@ const catalogs = {
     "welcome": "Welcome. Rename the example groups in edit mode. Add your first link with ＋.",
     "editDashboardTitle": "Edit title",
     "dashboardTitle": "Dashboard title",
-    "titleNote": "Leave empty to use the default title in the selected language. A custom title stays unchanged when switching languages."
+    "titleNote": "Leave empty to use the default title in the selected language. A custom title stays unchanged when switching languages.",
+    "expandGroup": "Expand {name}",
+    "collapseGroup": "Collapse {name}",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all"
   },
   "fr": {
     "pageTitle": "Localboard · Votre page d’accueil",
@@ -366,7 +374,11 @@ const catalogs = {
     "welcome": "Bienvenue. Renommez les groupes d’exemple en mode édition. Ajoutez votre premier lien avec ＋.",
     "editDashboardTitle": "Modifier le titre",
     "dashboardTitle": "Titre du tableau de bord",
-    "titleNote": "Laissez vide pour utiliser le titre par défaut dans la langue sélectionnée. Un titre personnalisé reste inchangé lors du changement de langue."
+    "titleNote": "Laissez vide pour utiliser le titre par défaut dans la langue sélectionnée. Un titre personnalisé reste inchangé lors du changement de langue.",
+    "expandGroup": "Déplier {name}",
+    "collapseGroup": "Replier {name}",
+    "expandAll": "Tout déplier",
+    "collapseAll": "Tout replier"
   },
   "es": {
     "pageTitle": "Localboard · Tu página de inicio",
@@ -488,7 +500,11 @@ const catalogs = {
     "welcome": "Bienvenido. Renombra los grupos de ejemplo en modo edición. Añade tu primer enlace con ＋.",
     "editDashboardTitle": "Editar título",
     "dashboardTitle": "Título del panel",
-    "titleNote": "Déjalo vacío para usar el título predeterminado del idioma seleccionado. Un título personalizado no cambia al cambiar de idioma."
+    "titleNote": "Déjalo vacío para usar el título predeterminado del idioma seleccionado. Un título personalizado no cambia al cambiar de idioma.",
+    "expandGroup": "Expandir {name}",
+    "collapseGroup": "Contraer {name}",
+    "expandAll": "Expandir todo",
+    "collapseAll": "Contraer todo"
   },
   "it": {
     "pageTitle": "Localboard · La tua pagina iniziale",
@@ -610,7 +626,11 @@ const catalogs = {
     "welcome": "Benvenuto. Rinomina i gruppi di esempio in modalità modifica. Aggiungi il tuo primo link con ＋.",
     "editDashboardTitle": "Modifica titolo",
     "dashboardTitle": "Titolo della dashboard",
-    "titleNote": "Lascia vuoto per usare il titolo predefinito nella lingua selezionata. Un titolo personalizzato non cambia quando cambi lingua."
+    "titleNote": "Lascia vuoto per usare il titolo predefinito nella lingua selezionata. Un titolo personalizzato non cambia quando cambi lingua.",
+    "expandGroup": "Espandi {name}",
+    "collapseGroup": "Comprimi {name}",
+    "expandAll": "Espandi tutto",
+    "collapseAll": "Comprimi tutto"
   },
   "nl": {
     "pageTitle": "Localboard · Jouw startpagina",
@@ -732,7 +752,11 @@ const catalogs = {
     "welcome": "Welkom. Hernoem de voorbeeldgroepen in bewerkingsmodus. Voeg je eerste link toe met ＋.",
     "editDashboardTitle": "Titel bewerken",
     "dashboardTitle": "Dashboardtitel",
-    "titleNote": "Laat leeg om de standaardtitel in de gekozen taal te gebruiken. Een eigen titel blijft ongewijzigd bij het wisselen van taal."
+    "titleNote": "Laat leeg om de standaardtitel in de gekozen taal te gebruiken. Een eigen titel blijft ongewijzigd bij het wisselen van taal.",
+    "expandGroup": "{name} uitklappen",
+    "collapseGroup": "{name} inklappen",
+    "expandAll": "Alles uitklappen",
+    "collapseAll": "Alles inklappen"
   }
 };
 const names = {de:'Deutsch',en:'English',fr:'Français',es:'Español',it:'Italiano',nl:'Nederlands'};

@@ -4,7 +4,7 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.2.1** · A portable browser dashboard for links, systems, and locations.
+**Version 1.3** · A portable browser dashboard for links, systems, and locations.
 
 ## Live demo
 
@@ -50,6 +50,15 @@ Open **Overview**, enable edit mode and select **Edit title** next to the headin
 A custom title stays the same in every language. Clear the field and save to
 restore the automatically translated default. Older saved default titles are
 migrated automatically; existing custom titles are preserved.
+
+## Collapsible sidebar
+
+Use **▾ / ▸** next to a group to hide or show its subgroups. Nested subgroups can
+be collapsed independently. **Expand all** and **Collapse all** control the entire
+tree, without requiring edit mode. The state survives reloads and is included in
+exports. Clicking a group name still opens that group; collapsing only affects
+the sidebar. Opening a hidden subgroup through its tabs automatically expands
+its ancestors.
 
 ## Features
 

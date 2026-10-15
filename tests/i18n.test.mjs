@@ -228,3 +228,66 @@ test('JSON export/import and HTML seed keep explicit title mode and custom title
  portable.get('#language').onchange({target:{value:'nl'}});
  assert.equal(portable.get('#title').textContent,'Meine Startseite');
 });
+
+test('sidebar folding works while locked, hides descendants only and survives reload',()=>{
+ const app=boot();const before=app.run('JSON.stringify({groups:data.groups,links:data.links,active:data.active})');
+ assert.ok(app.get('#tree').innerHTML.includes('data-group="zone-b"'));
+ app.run(`toggleGroup('site-a')`);
+ assert.equal(app.run('editing'),false);
+ assert.ok(!app.get('#tree').innerHTML.includes('data-group="zone-b"'));
+ assert.ok(app.get('#tree').innerHTML.includes('aria-expanded="false"'));
+ assert.equal(app.run('JSON.stringify({groups:data.groups,links:data.links,active:data.active})'),before);
+ const restored=boot({saved:app.values.get('localboard.v1.default')});
+ assert.ok(!restored.get('#tree').innerHTML.includes('data-group="zone-b"'));
+ restored.run(`toggleGroup('site-a')`);
+ assert.ok(restored.get('#tree').innerHTML.includes('data-group="zone-b"'));
+});
+
+test('nested folds are independent; navigating to a hidden descendant reveals its ancestors',()=>{
+ const app=boot();app.run(`data.groups.push({id:'deep',name:'Deep',parent:'zone-b',background:'',ratio:1});render();toggleGroup('zone-b');toggleGroup('site-a');toggleGroup('site-a')`);
+ assert.ok(app.get('#tree').innerHTML.includes('data-group="zone-b"'));
+ assert.ok(!app.get('#tree').innerHTML.includes('data-group="deep"'));
+ app.run(`toggleGroup('site-a');navigate('deep')`);
+ assert.ok(app.get('#tree').innerHTML.includes('data-group="deep"'));
+ assert.equal(app.run('data.collapsedGroups.length'),0);
+ assert.equal(app.run('data.active'),'deep');
+ app.run(`toggleGroup('site-a')`);
+ assert.equal(app.run('data.active'),'deep');
+ assert.ok(app.get('#tree').innerHTML.includes('contains-active'));
+});
+
+test('expand/collapse all and invalid or leaf toggles',()=>{
+ const app=boot();app.run(`data.groups.push({id:'deep',name:'Deep',parent:'zone-b',background:'',ratio:1});render()`);
+ app.get('#collapseAll').onclick();
+ assert.deepEqual(clone(app.run('data.collapsedGroups')),['site-a','zone-b']);
+ const before=app.run('JSON.stringify(data)');app.run(`toggleGroup('missing');toggleGroup('deep')`);
+ assert.equal(app.run('JSON.stringify(data)'),before);
+ app.get('#expandAll').onclick();assert.equal(app.run('data.collapsedGroups.length'),0);
+ assert.ok(app.get('#tree').innerHTML.includes('data-group="deep"'));
+});
+
+test('legacy and malformed fold settings normalize safely and JSON/HTML seeds preserve valid folds',async()=>{
+ const app=boot();const old=clone(app.run('data'));delete old.collapsedGroups;
+ const legacy=boot({saved:JSON.stringify(old)});assert.equal(legacy.run('data.collapsedGroups.length'),0);
+ old.collapsedGroups=['site-a','site-a','missing','zone-b',null,{}];
+ const normalized=boot({saved:JSON.stringify(old)});assert.deepEqual(clone(normalized.run('data.collapsedGroups')),['site-a']);
+ normalized.run(`download=(name,content)=>{globalThis.exported=content;}`);
+ normalized.get('#export').onclick();normalized.get('#jsonExport').onclick();
+ const exported=JSON.parse(normalized.context.exported);assert.deepEqual(exported.collapsedGroups,['site-a']);
+ const snapshot=boot({seed:exported});assert.ok(!snapshot.get('#tree').innerHTML.includes('data-group="zone-b"'));
+ const imported=boot();imported.get('#lock').onclick();
+ await imported.get('#importFile').onchange({target:{files:[{size:500,text:async()=>JSON.stringify(exported)}],value:''}});
+ assert.ok(!imported.get('#tree').innerHTML.includes('data-group="zone-b"'));
+});
+
+test('fold labels are localized and safely escape custom group names',()=>{
+ const app=boot();app.run(`data.groups[0].name='House "A" <B>';render()`);
+ for(const language of languages){
+  app.get('#language').onchange({target:{value:language}});
+  const label=i18n.translate(language,'collapseGroup',{name:'House "A" <B>'});
+  app.context.expectedLabel=label;
+  assert.ok(app.get('#tree').innerHTML.includes(app.run('esc(expectedLabel)')));
+ }
+ app.run(`editing=true;toggleGroup('site-a');moveGroup('site-a',1)`);
+ assert.deepEqual(clone(app.run('data.collapsedGroups')),['site-a']);
+});

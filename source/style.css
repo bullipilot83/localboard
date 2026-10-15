@@ -21,3 +21,11 @@ header{flex-wrap:wrap;padding:15px 0}
 .title-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .title-row h1{overflow-wrap:anywhere;min-width:0}
 .title-row button{font-size:12px}
+
+/* Sidebar disclosure buttons stay usable in both locked and edit modes. */
+.tree-tools{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 10px}
+.tree-tools button{font-size:10px;padding:5px 7px;flex:1}
+nav .group-fold{flex:0 0 24px;width:24px;margin:0;padding:7px 0;text-align:center;color:var(--muted);font-size:16px}
+.group-fold-spacer{flex:0 0 24px;width:24px}
+nav .group-select.contains-active{box-shadow:inset 2px 0 var(--accent);color:var(--accent)}
+@media(max-width:600px){.tree-tools{margin-top:12px;margin-bottom:0}.tree-tools button{flex:0 1 auto}nav .group-fold{padding-left:0!important}}

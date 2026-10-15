@@ -23,7 +23,7 @@ function applyLanguage(){
 
 const $=s=>document.querySelector(s), uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,9);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const blank=()=>({version:1,language,id:uid(),revision:uid(),title:'',titleMode:'auto',active:'all',views:{},groups:[{id:'site-a',name:t('siteA'),parent:null,background:'',ratio:16/9},{id:'zone-b',name:t('zoneB'),parent:'site-a',background:'',ratio:16/9},{id:'zone-c',name:t('zoneC'),parent:'site-a',background:'',ratio:16/9},{id:'systems',name:t('systems'),parent:null,background:'',ratio:16/9}],links:[]});
+const blank=()=>({version:1,language,id:uid(),revision:uid(),title:'',titleMode:'auto',active:'all',views:{},collapsedGroups:[],groups:[{id:'site-a',name:t('siteA'),parent:null,background:'',ratio:16/9},{id:'zone-b',name:t('zoneB'),parent:'site-a',background:'',ratio:16/9},{id:'zone-c',name:t('zoneC'),parent:'site-a',background:'',ratio:16/9},{id:'systems',name:t('systems'),parent:null,background:'',ratio:16/9}],links:[]});
 function url(s){
  try {if(typeof s!=='string')throw Error();s=s.trim();if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(s))s='http://'+s;
  const u=new URL(s);if(!['http:','https:'].includes(u.protocol)||!u.hostname||u.username||u.password)throw Error();return u.href;
@@ -41,7 +41,7 @@ function validate(d){if(!d||d.version!==1||typeof d.id!=='string'||typeof d.revi
   d.titleMode=wasDefault?'auto':'custom';
  }
  if(d.titleMode==='auto'||!d.title.trim()){d.titleMode='auto';d.title='';}
- d.active=ids.has(d.active)?d.active:'all';const views={};if(d.views&&typeof d.views==='object')for(const k of ['all',...ids])if(['grid','list','map'].includes(d.views[k]))Object.defineProperty(views,k,{value:d.views[k],enumerable:true,writable:true,configurable:true});d.views=views;d.language=LocalboardI18n.supported(d.language)?d.language:language;return d;}
+ d.active=ids.has(d.active)?d.active:'all';const views={};if(d.views&&typeof d.views==='object')for(const k of ['all',...ids])if(['grid','list','map'].includes(d.views[k]))Object.defineProperty(views,k,{value:d.views[k],enumerable:true,writable:true,configurable:true});d.views=views;d.collapsedGroups=Array.isArray(d.collapsedGroups)?[...new Set(d.collapsedGroups.filter(id=>typeof id==='string'&&ids.has(id)&&d.groups.some(g=>g.parent===id)))]:[];d.language=LocalboardI18n.supported(d.language)?d.language:language;return d;}
 let seed=JSON.parse($('#seed').textContent);
 if(LocalboardI18n.supported(seed?.language))language=seed.language;
 let data=seed?validate(seed):blank(), editing=false, baseRevision=data.revision, dirty=false, startupWarning='';
@@ -54,7 +54,25 @@ function message(key,params={}){noticeState={key,params};renderStatus();}
 function persist(){data.revision=uid();data.baseRevision=baseRevision;try{const current=localStorage.getItem(KEY);if(current&&lastStored&&current!==lastStored){dirty=true;message('writeConflict');return false;}const serialized=JSON.stringify(data);localStorage.setItem(KEY,serialized);lastStored=serialized;dirty=false;lastSaved=new Date();renderStatus();return true;}catch(e){dirty=true;message('storageWriteError');return false;}}
 let lastStored;try{lastStored=localStorage.getItem(KEY);}catch{};
 function groupOptions(selected,exclude=[]){return data.groups.filter(g=>!exclude.includes(g.id)).map(g=>`<option value="${esc(g.id)}" ${g.id===selected?'selected':''}>${esc(path(g.id))}</option>`).join('');}
-function navigate(id){data.active=id;$('#search').value='';persist();render();}
+function navigate(id){data.active=id;revealAncestors(id);$('#search').value='';persist();render();}
+// Folding is a view preference, available without enabling edit mode.
+function revealAncestors(id){
+ const ancestors=new Set();let group=data.groups.find(g=>g.id===id);
+ while(group?.parent){ancestors.add(group.parent);group=data.groups.find(g=>g.id===group.parent);}
+ data.collapsedGroups=data.collapsedGroups.filter(id=>!ancestors.has(id));
+}
+function toggleGroup(id){
+ if(!data.groups.some(g=>g.id===id)||!data.groups.some(g=>g.parent===id))return;
+ data.collapsedGroups=data.collapsedGroups.includes(id)?data.collapsedGroups.filter(x=>x!==id):[...data.collapsedGroups,id];
+ persist();render();
+ [...$('#tree').querySelectorAll('[data-fold]')].find(b=>b.dataset.fold===id)?.focus();
+}
+function foldAll(collapse){
+ data.collapsedGroups=collapse?data.groups.filter(g=>data.groups.some(child=>child.parent===g.id)).map(g=>g.id):[];
+ persist();render();
+}
+$('#collapseAll').onclick=()=>foldAll(true);
+$('#expandAll').onclick=()=>foldAll(false);
 function orderedGroups(parent=null){return data.groups.filter(g=>g.parent===parent).flatMap(g=>[g,...orderedGroups(g.id)]);}
 function moveGroup(id,direction){
  if(!editing||![1,-1].includes(direction))return;
@@ -68,7 +86,27 @@ function moveGroup(id,direction){
  else [...$('#tree').querySelectorAll('[data-group]')].find(b=>b.dataset.group===id)?.focus();
 }
 function render(){applyLanguage();document.body.classList.toggle('editing',editing);$('#lock').textContent=editing?t('finishEditing'):t('editButton');const active=data.groups.find(g=>g.id===data.active);$('#title').textContent=active?active.name:dashboardTitle();$('#editTitle').hidden=Boolean(active);$('#crumb').textContent=active?path(active.id):t('overview');$('#groupEdit').disabled=!active;$('#background').disabled=!active;
- let tree='<button data-group="all" class="'+(!active?'active':'')+'">▦ '+esc(t('overview'))+' <small>'+data.links.length+'</small></button>';function branch(parent,depth){const siblings=data.groups.filter(g=>g.parent===parent);for(const [index,g] of siblings.entries()){tree+=`<div class="group-row" style="--depth:${depth}"><button data-group="${esc(g.id)}" class="group-select ${data.active===g.id?'active':''}">${depth?'↳':'▱'} <span>${esc(g.name)}</span><small>${data.links.filter(l=>descendants(g.id).includes(l.group)).length}</small></button><div class="group-order edit-only"><button data-id="${esc(g.id)}" data-move="-1" title="${esc(t('moveUp',{name:g.name}))}" aria-label="${esc(t('moveUp',{name:g.name}))}" ${index===0?'disabled':''}>↑</button><button data-id="${esc(g.id)}" data-move="1" title="${esc(t('moveDown',{name:g.name}))}" aria-label="${esc(t('moveDown',{name:g.name}))}" ${index===siblings.length-1?'disabled':''}>↓</button></div></div>`;branch(g.id,depth+1);}}branch(null,0);$('#tree').innerHTML=tree;$('#tree').querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>navigate(b.dataset.group));$('#tree').querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>moveGroup(b.dataset.id,Number(b.dataset.move)));
+ let tree='<button data-group="all" class="'+(!active?'active':'')+'">▦ '+esc(t('overview'))+' <small>'+data.links.length+'</small></button>';
+ function branch(parent,depth){
+  const siblings=data.groups.filter(g=>g.parent===parent);
+  for(const [index,g] of siblings.entries()){
+   const children=data.groups.some(child=>child.parent===g.id),folded=data.collapsedGroups.includes(g.id);
+   const foldLabel=t(folded?'expandGroup':'collapseGroup',{name:g.name});
+   const activeInside=folded&&data.active!==g.id&&descendants(g.id).includes(data.active);
+   tree+=`<div class="group-row" style="--depth:${depth}">
+    ${children?`<button class="group-fold" type="button" data-fold="${esc(g.id)}" aria-expanded="${!folded}" aria-label="${esc(foldLabel)}" title="${esc(foldLabel)}">${folded?'▸':'▾'}</button>`:'<span class="group-fold-spacer" aria-hidden="true"></span>'}
+    <button data-group="${esc(g.id)}" class="group-select ${data.active===g.id?'active':''} ${activeInside?'contains-active':''}" ${data.active===g.id?'aria-current="page"':''}><span>${esc(g.name)}</span><small>${data.links.filter(l=>descendants(g.id).includes(l.group)).length}</small></button>
+    <div class="group-order edit-only"><button data-id="${esc(g.id)}" data-move="-1" title="${esc(t('moveUp',{name:g.name}))}" aria-label="${esc(t('moveUp',{name:g.name}))}" ${index===0?'disabled':''}>↑</button><button data-id="${esc(g.id)}" data-move="1" title="${esc(t('moveDown',{name:g.name}))}" aria-label="${esc(t('moveDown',{name:g.name}))}" ${index===siblings.length-1?'disabled':''}>↓</button></div>
+   </div>`;
+   if(!folded)branch(g.id,depth+1);
+  }
+ }
+ branch(null,0);$('#tree').innerHTML=tree;
+ $('#tree').querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>navigate(b.dataset.group));
+ $('#tree').querySelectorAll('[data-fold]').forEach(b=>b.onclick=()=>toggleGroup(b.dataset.fold));
+ $('#tree').querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>moveGroup(b.dataset.id,Number(b.dataset.move)));
+ const hasBranches=data.groups.some(g=>g.parent!==null);
+ $('#collapseAll').disabled=!hasBranches;$('#expandAll').disabled=!data.collapsedGroups.length;
  const tabs=active?data.groups.filter(g=>g.parent===active.id):data.groups.filter(g=>!g.parent);$('#tabs').innerHTML=tabs.map(g=>`<button data-group="${esc(g.id)}">${esc(g.name)} ↗</button>`).join('');$('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>navigate(b.dataset.group));renderContent();}
 function renderContent(){const view=data.views[data.active]||'grid', allowed=data.active==='all'?data.groups.map(g=>g.id):descendants(data.active),q=$('#search').value.toLocaleLowerCase(language);const links=data.links.filter(l=>allowed.includes(l.group)&&[l.name,l.url,path(l.group)].join(' ').toLocaleLowerCase(language).includes(q));$('#subtitle').textContent=t('summary',{links:links.length,groups:allowed.length});document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('#hint').textContent=view==='map'?(editing?t('mapEditHint'):t('mapHint')):t('dropHint')+' '+(editing?t('sortHint'):t('lockedHint'));const content=$('#content');content.className=view;content.replaceChildren();
  if(view==='map'){const map=document.createElement('div');map.className='map';const g=data.groups.find(x=>x.id===data.active);if(g?.background){map.style.aspectRatio=String(g.ratio);const img=new Image();img.src=g.background;img.alt=t('siteMap');map.append(img);}links.forEach(l=>map.append(card(l,true)));content.append(map);if(!links.length)$('#hint').textContent+=' '+t('noSelectionLinks');}
@@ -91,7 +129,7 @@ function editDashboardTitle(){
  });
 }
 $('#editTitle').onclick=editDashboardTitle;
-function editGroup(g){if(!editing)return;const blocked=g?descendants(g.id):[];dialog(g?t('editGroup'):t('newGroup'),`<label>${esc(t('name'))}<input id="gname" maxlength="160" required value="${esc(g?.name||'')}"></label><label>${esc(t('parentGroup'))}<select id="gparent"><option value="">${esc(t('noParent'))}</option>${groupOptions(g?.parent|| (data.active==='all'?null:data.active),blocked)}</select></label><p class="note">${esc(t('groupNote'))}</p>`,()=>{const name=$('#gname').value.trim();if(!name)throw uiError('nameRequired');const p=$('#gparent').value||null;if(g)Object.assign(g,{name,parent:p});else{const id=uid();data.groups.push({id,name,parent:p,background:'',ratio:16/9});data.active=id;}},g?()=>{const ids=descendants(g.id),count=data.links.filter(l=>ids.includes(l.group)).length;if(confirm(t('deleteGroupConfirm',{name:g.name,groups:ids.length-1,links:count}))){data.groups=data.groups.filter(x=>!ids.includes(x.id));data.links=data.links.filter(x=>!ids.includes(x.group));data.active='all';$('#modal').close();persist();render();}}:null);}
+function editGroup(g){if(!editing)return;const blocked=g?descendants(g.id):[];dialog(g?t('editGroup'):t('newGroup'),`<label>${esc(t('name'))}<input id="gname" maxlength="160" required value="${esc(g?.name||'')}"></label><label>${esc(t('parentGroup'))}<select id="gparent"><option value="">${esc(t('noParent'))}</option>${groupOptions(g?.parent|| (data.active==='all'?null:data.active),blocked)}</select></label><p class="note">${esc(t('groupNote'))}</p>`,()=>{const name=$('#gname').value.trim();if(!name)throw uiError('nameRequired');const p=$('#gparent').value||null;if(g)Object.assign(g,{name,parent:p});else{const id=uid();data.groups.push({id,name,parent:p,background:'',ratio:16/9});data.active=id;}revealAncestors(data.active);},g?()=>{const ids=descendants(g.id),count=data.links.filter(l=>ids.includes(l.group)).length;if(confirm(t('deleteGroupConfirm',{name:g.name,groups:ids.length-1,links:count}))){data.groups=data.groups.filter(x=>!ids.includes(x.id));data.collapsedGroups=data.collapsedGroups.filter(id=>!ids.includes(id)&&data.groups.some(x=>x.parent===id));data.links=data.links.filter(x=>!ids.includes(x.group));data.active='all';$('#modal').close();persist();render();}}:null);}
 $('#lock').onclick=()=>{if(!editing&&!confirm(t('editConfirm')))return;editing=!editing;render();};$('#add').onclick=()=>editLink();$('#newGroup').onclick=()=>editGroup();$('#groupEdit').onclick=()=>editGroup(data.groups.find(g=>g.id===data.active));$('#search').oninput=renderContent;document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{data.views[data.active]=b.dataset.view;persist();renderContent();});
 $('#background').onclick=()=>{if(!editing)return;const g=data.groups.find(g=>g.id===data.active);dialog(t('mapImage'),`<p class="note">${esc(t('mapNote'))}</p><label>${esc(t('floorPlan'))}<input id="bgfile" type="file" accept="image/png,image/jpeg,image/webp"></label>${g.background?`<label class="check"><input id="bgclear" type="checkbox">${esc(t('removeBackground'))}</label>`:''}`,async()=>{const img=await imageData($('#bgfile').files[0],2000);if(img){g.background=img.src;g.ratio=img.ratio;}else if($('#bgclear')?.checked)g.background='';data.views[g.id]='map';});};
 function download(name,content,type){const a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000);}

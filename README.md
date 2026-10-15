@@ -4,7 +4,7 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.2.1** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
+**Version 1.3** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
 
 ## Live-Demo
 
@@ -52,6 +52,16 @@ In der **Übersicht** den Bearbeitungsmodus aktivieren und neben der Überschrif
 Das Feld leeren und speichern, um wieder den automatisch übersetzten Standardtitel
 zu verwenden. Alte gespeicherte Standardtitel werden automatisch umgestellt;
 bereits vorhandene individuelle Titel bleiben erhalten.
+
+## Faltbare Seitenleiste
+
+Mit **▾ / ▸** neben einer Gruppe ihre Untergruppen aus- oder einblenden.
+Auch verschachtelte Untergruppen lassen sich einzeln zuklappen. **Alle aufklappen**
+und **Alle zuklappen** steuern den gesamten Baum. Dafür ist kein Bearbeitungsmodus
+nötig. Der Zustand bleibt nach dem Neuladen erhalten und wird mitexportiert.
+Ein Klick auf einen Gruppennamen öffnet weiterhin die Gruppe; das Falten verändert
+nur die Seitenleiste. Beim Öffnen einer versteckten Untergruppe über ihre Tabs
+werden deren übergeordnete Gruppen automatisch aufgeklappt.
 
 ## Funktionen
 
