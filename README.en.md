@@ -6,6 +6,25 @@ local web dashboard, without any hosting or installation
 
 **Version 1.2.1** · A portable browser dashboard for links, systems, and locations.
 
+## Live demo
+
+[**Try the dashboard in your browser →**](https://bullipilot83.github.io/localboard/)
+
+The demo provides the same features as the local version. Each visitor uses
+their own browser storage; dashboard changes are not shared with other visitors
+or written to the repository. The demo and the downloaded HTML file have
+separate storage. To transfer your data, export JSON and import it locally.
+
+### One-time setup by the repository owner
+
+The demo entry point is ready. If the address still returns 404, open
+**Settings → Pages → Build and deployment**, select **Deploy from a branch**,
+choose branch **main** and folder **/ (root)**, then click **Save**.
+The demo becomes available after a successful deployment. Later changes to
+`startpage.html` become available online with the next Pages deployment.
+`index.html` redirects to that file, so there is no separate dashboard copy
+to maintain.
+
 ## Quick start
 
 1. Download the project via **Code → Download ZIP** and extract it.

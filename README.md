@@ -6,6 +6,26 @@ local web dashboard, without any hosting or installation
 
 **Version 1.2.1** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
 
+## Live-Demo
+
+[**Dashboard im Browser ausprobieren →**](https://bullipilot83.github.io/localboard/)
+
+Die Demo bietet dieselben Funktionen wie die lokale Version. Jeder Besucher
+arbeitet mit seinem eigenen Browserspeicher; Änderungen am Dashboard werden
+nicht mit anderen Besuchern geteilt oder ins Repository geschrieben.
+Die Demo und die heruntergeladene HTML-Datei haben getrennte Speicherstände.
+Zum Übernehmen der Daten JSON exportieren und lokal importieren.
+
+### Einmalige Aktivierung durch den Repository-Inhaber
+
+Der Demo-Einstieg ist vorbereitet. Falls die Adresse noch einen Fehler 404 zeigt:
+Unter **Settings → Pages → Build and deployment** als Quelle
+**Deploy from a branch**, Branch **main** und Ordner **/ (root)** wählen und
+**Save** anklicken. Nach erfolgreicher Veröffentlichung ist die Demo erreichbar.
+Spätere Änderungen an `startpage.html` werden mit der nächsten Pages-Veröffentlichung
+auch online verfügbar. `index.html` leitet auf diese Datei weiter; es gibt keine
+separate Kopie des Dashboards zu pflegen.
+
 ## Schnellstart
 
 1. Über **Code → Download ZIP** herunterladen und entpacken.
