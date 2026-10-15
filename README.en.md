@@ -4,7 +4,7 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.3** · A portable browser dashboard for links, systems, and locations.
+**Version 1.4** · A portable browser dashboard for links, systems, and locations.
 
 ## Live demo
 
@@ -60,6 +60,33 @@ exports. Clicking a group name still opens that group; collapsing only affects
 the sidebar. Opening a hidden subgroup through its tabs automatically expands
 its ancestors.
 
+## Appearance, light/dark themes and automatic switching
+
+Use **Theme** at the top to choose **Dark**, **Light**, **System**, **Schedule**
+or **Sunrise / sunset**. Existing dashboards retain the dark theme by default.
+
+Open **Edit → Appearance** to customize your company colors. Dark and light each
+have an independent palette for page background, tiles/dialogs, sidebar, text,
+secondary text, accents and borders. Use the color picker or enter HEX values.
+The selected palette is previewed immediately. **Save** applies it; **Cancel** or
+Escape restores the saved design. Each palette can be reset separately. A warning
+appears when text contrast is low.
+
+- **System:** follows the device's light/dark preference.
+- **Schedule:** two switch times in the device's current time zone.
+- **Sunrise / sunset:** uses manually entered coordinates or explicitly requested
+  browser geolocation. Day/night is approximated locally using the
+  [NOAA solar position equations](https://gml.noaa.gov/grad/solcalc/solareqns.PDF).
+  No weather service or API key is required. The geolocation request itself
+  depends on browser permission and available positioning services. Imported
+  solar settings without valid coordinates fall back to the time schedule,
+  with a note in the status bar.
+
+Automatic modes are checked every minute and when returning to the dashboard.
+Colors, mode, times and any coordinates are stored in the browser and included in
+JSON/HTML exports. CSS variables apply the design at runtime; local source files
+are not overwritten.
+
 ## Features
 
 - Add links through a dialog or by dragging and dropping a web address.
@@ -99,10 +126,11 @@ are used.
 | `startpage.html` | Complete standalone file, ready to open |
 | `source/startpage.html` | HTML source using separate JavaScript and CSS |
 | `source/app.js` | Application logic |
+| `source/appearance.js` | Palettes, schedules and local solar position calculation |
 | `source/i18n.js` | Translation catalogs and language detection for all six languages |
 | `source/style.css` | Styling |
 | `scripts/build.mjs` | Build the standalone file from the sources |
-| `tests/i18n.test.mjs` | Language, migration and export tests |
+| `tests/*.test.mjs` | Language, appearance, scheduling, migration and export tests |
 | `ANLEITUNG.txt` | Detailed instructions, limitations, and update notes (German) |
 
 ## Development
@@ -112,7 +140,7 @@ Edit the files in `source/`, then use Node.js to rebuild the standalone file:
 ```sh
 node scripts/build.mjs
 node --check source/app.js
-node --test tests/i18n.test.mjs
+node --test tests/*.test.mjs
 ```
 
 Node.js is only required for this development step. Running the finished

@@ -8,6 +8,8 @@ function parseDashboard(text) {
  return validate(value);
 }
 let noticeState=null, lastSaved=null;
+let themeDraft=null,themePalette='dark';
+const themeMedia=window.matchMedia?.('(prefers-color-scheme: dark)');
 function renderStatus(){
  $('#storage').textContent=dirty?t('memoryOnly'):lastSaved?t('saved',{time:lastSaved.toLocaleTimeString(language,{hour:'2-digit',minute:'2-digit'})}):t('localStorage');
  if(noticeState){$('#notice').hidden=false;$('#notice').textContent=t(noticeState.key,noticeState.params);}
@@ -18,12 +20,13 @@ function applyLanguage(){
  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.setAttribute('placeholder',t(el.dataset.i18nPlaceholder)));
  document.querySelectorAll('[data-i18n-label]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nLabel)));
  $('#language').value=language;
+ $('#themeMode').innerHTML=themeOptions(data.appearance.mode);$('#themeMode').value=data.appearance.mode;
  renderStatus();
 }
 
 const $=s=>document.querySelector(s), uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,9);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const blank=()=>({version:1,language,id:uid(),revision:uid(),title:'',titleMode:'auto',active:'all',views:{},collapsedGroups:[],groups:[{id:'site-a',name:t('siteA'),parent:null,background:'',ratio:16/9},{id:'zone-b',name:t('zoneB'),parent:'site-a',background:'',ratio:16/9},{id:'zone-c',name:t('zoneC'),parent:'site-a',background:'',ratio:16/9},{id:'systems',name:t('systems'),parent:null,background:'',ratio:16/9}],links:[]});
+const blank=()=>({version:1,language,appearance:LocalboardAppearance.defaults(),id:uid(),revision:uid(),title:'',titleMode:'auto',active:'all',views:{},collapsedGroups:[],groups:[{id:'site-a',name:t('siteA'),parent:null,background:'',ratio:16/9},{id:'zone-b',name:t('zoneB'),parent:'site-a',background:'',ratio:16/9},{id:'zone-c',name:t('zoneC'),parent:'site-a',background:'',ratio:16/9},{id:'systems',name:t('systems'),parent:null,background:'',ratio:16/9}],links:[]});
 function url(s){
  try {if(typeof s!=='string')throw Error();s=s.trim();if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(s))s='http://'+s;
  const u=new URL(s);if(!['http:','https:'].includes(u.protocol)||!u.hostname||u.username||u.password)throw Error();return u.href;
@@ -41,7 +44,7 @@ function validate(d){if(!d||d.version!==1||typeof d.id!=='string'||typeof d.revi
   d.titleMode=wasDefault?'auto':'custom';
  }
  if(d.titleMode==='auto'||!d.title.trim()){d.titleMode='auto';d.title='';}
- d.active=ids.has(d.active)?d.active:'all';const views={};if(d.views&&typeof d.views==='object')for(const k of ['all',...ids])if(['grid','list','map'].includes(d.views[k]))Object.defineProperty(views,k,{value:d.views[k],enumerable:true,writable:true,configurable:true});d.views=views;d.collapsedGroups=Array.isArray(d.collapsedGroups)?[...new Set(d.collapsedGroups.filter(id=>typeof id==='string'&&ids.has(id)&&d.groups.some(g=>g.parent===id)))]:[];d.language=LocalboardI18n.supported(d.language)?d.language:language;return d;}
+ d.active=ids.has(d.active)?d.active:'all';const views={};if(d.views&&typeof d.views==='object')for(const k of ['all',...ids])if(['grid','list','map'].includes(d.views[k]))Object.defineProperty(views,k,{value:d.views[k],enumerable:true,writable:true,configurable:true});d.views=views;d.appearance=LocalboardAppearance.normalize(d.appearance);d.collapsedGroups=Array.isArray(d.collapsedGroups)?[...new Set(d.collapsedGroups.filter(id=>typeof id==='string'&&ids.has(id)&&d.groups.some(g=>g.parent===id)))]:[];d.language=LocalboardI18n.supported(d.language)?d.language:language;return d;}
 let seed=JSON.parse($('#seed').textContent);
 if(LocalboardI18n.supported(seed?.language))language=seed.language;
 let data=seed?validate(seed):blank(), editing=false, baseRevision=data.revision, dirty=false, startupWarning='';
@@ -85,7 +88,7 @@ function moveGroup(id,direction){
  if(button&&!button.disabled)button.focus();
  else [...$('#tree').querySelectorAll('[data-group]')].find(b=>b.dataset.group===id)?.focus();
 }
-function render(){applyLanguage();document.body.classList.toggle('editing',editing);$('#lock').textContent=editing?t('finishEditing'):t('editButton');const active=data.groups.find(g=>g.id===data.active);$('#title').textContent=active?active.name:dashboardTitle();$('#editTitle').hidden=Boolean(active);$('#crumb').textContent=active?path(active.id):t('overview');$('#groupEdit').disabled=!active;$('#background').disabled=!active;
+function render(){applyLanguage();applyAppearance();document.body.classList.toggle('editing',editing);$('#lock').textContent=editing?t('finishEditing'):t('editButton');const active=data.groups.find(g=>g.id===data.active);$('#title').textContent=active?active.name:dashboardTitle();$('#editTitle').hidden=Boolean(active);$('#crumb').textContent=active?path(active.id):t('overview');$('#groupEdit').disabled=!active;$('#background').disabled=!active;
  let tree='<button data-group="all" class="'+(!active?'active':'')+'">▦ '+esc(t('overview'))+' <small>'+data.links.length+'</small></button>';
  function branch(parent,depth){
   const siblings=data.groups.filter(g=>g.parent===parent);
@@ -134,18 +137,19 @@ $('#lock').onclick=()=>{if(!editing&&!confirm(t('editConfirm')))return;editing=!
 $('#background').onclick=()=>{if(!editing)return;const g=data.groups.find(g=>g.id===data.active);dialog(t('mapImage'),`<p class="note">${esc(t('mapNote'))}</p><label>${esc(t('floorPlan'))}<input id="bgfile" type="file" accept="image/png,image/jpeg,image/webp"></label>${g.background?`<label class="check"><input id="bgclear" type="checkbox">${esc(t('removeBackground'))}</label>`:''}`,async()=>{const img=await imageData($('#bgfile').files[0],2000);if(img){g.background=img.src;g.ratio=img.ratio;}else if($('#bgclear')?.checked)g.background='';data.views[g.id]='map';});};
 function download(name,content,type){const a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000);}
 async function portable(){
- let styleText,jsText,i18nText;
+ let styleText,jsText,i18nText,appearanceText;
  const css=document.querySelector('link[rel=stylesheet]');
  if(css){try{
   styleText=[...css.sheet.cssRules].map(r=>r.cssText).join('\n');
-  [jsText,i18nText]=await Promise.all(['app.js','i18n.js'].map(async path=>{const r=await fetch(path);if(!r.ok)throw Error();return r.text();}));
+  [jsText,i18nText,appearanceText]=await Promise.all(['app.js','i18n.js','appearance.js'].map(async path=>{const r=await fetch(path);if(!r.ok)throw Error();return r.text();}));
  }catch{throw uiError('portableError');}}
- else{styleText=$('#appStyle').textContent;jsText=$('#appCode').textContent;i18nText=$('#i18nCode').textContent;}
+ else{styleText=$('#appStyle').textContent;jsText=$('#appCode').textContent;i18nText=$('#i18nCode').textContent;appearanceText=$('#appearanceCode').textContent;}
  const doc=document.documentElement.cloneNode(true);
  doc.querySelector('link[rel=stylesheet]')?.remove();doc.querySelector('#appStyle')?.remove();
  const st=document.createElement('style');st.id='appStyle';st.textContent=styleText;doc.querySelector('head').append(st);
- doc.querySelectorAll('script[src], #appCode, #i18nCode').forEach(el=>el.remove());
- for(const [id,code] of [['i18nCode',i18nText],['appCode',jsText]]){const script=document.createElement('script');script.id=id;script.textContent=code;doc.querySelector('body').append(script);}
+ doc.querySelectorAll('script[src], #appCode, #i18nCode, #appearanceCode').forEach(el=>el.remove());
+ for(const [id,code] of [['i18nCode',i18nText],['appearanceCode',appearanceText],['appCode',jsText]]){const script=document.createElement('script');script.id=id;script.textContent=code;doc.querySelector('body').append(script);}
+ for(const [key,value] of Object.entries(LocalboardAppearance.tokens(data.appearance.palettes[LocalboardAppearance.resolve(data.appearance,new Date(),themeMedia?.matches??true)],LocalboardAppearance.resolve(data.appearance,new Date(),themeMedia?.matches??true))))doc.style.setProperty('--'+key,value);
  const snapshot=JSON.parse(JSON.stringify(data));snapshot.baseRevision=snapshot.revision;
  doc.querySelector('#seed').textContent=JSON.stringify(snapshot).replace(/</g,'\\u003c');
  doc.querySelector('#modal').removeAttribute('open');
@@ -164,4 +168,90 @@ $('#help').onclick=()=>dialog(t('helpTitle'),'<div class="help">'+['Storage','Sa
 $('#language').innerHTML=Object.entries(LocalboardI18n.names).map(([code,name])=>`<option value="${code}" lang="${code}">${name}</option>`).join('');
 $('#language').onchange=e=>{const next=e.target.value;if(!LocalboardI18n.supported(next))return;language=next;data.language=next;persist();render();};
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});window.addEventListener('storage',e=>{if(e.key===KEY&&e.newValue!==lastStored){message('otherTabChanged');}});
+function themeOptions(selected){return LocalboardAppearance.modes.map(mode=>`<option value="${mode}" ${mode===selected?'selected':''}>${esc(t('theme'+mode[0].toUpperCase()+mode.slice(1)))}</option>`).join('');}
+function applyAppearance(appearance=data.appearance,preview=null){
+ const scheme=preview||LocalboardAppearance.resolve(appearance,new Date(),themeMedia?.matches??true);
+ const root=document.documentElement;
+ for(const [key,value] of Object.entries(LocalboardAppearance.tokens(appearance.palettes[scheme],scheme)))root.style.setProperty('--'+key,value);
+ root.style.colorScheme=scheme;root.dataset.theme=scheme;
+ $('#themeStatus').textContent=appearance.mode==='solar'&&!appearance.location?t('solarFallback'):t('themeCurrent',{theme:t(scheme==='dark'?'themeDark':'themeLight')});
+}
+function refreshAppearance(){applyAppearance(themeDraft||data.appearance,themeDraft?themePalette:null);}
+function readThemeColors(strict=false){
+ let valid=true;
+ for(const key of LocalboardAppearance.colorKeys){const value=$('#themeHex_'+key).value;
+  if(LocalboardAppearance.colorOK(value)){themeDraft.palettes[themePalette][key]=value.toLowerCase();$('#themeColor_'+key).value=value;}
+  else valid=false;
+ }
+ if(!valid&&strict)throw uiError('invalidColors');
+ return valid;
+}
+function previewAppearance(){
+ refreshAppearance();
+ $('#contrastWarning').hidden=!LocalboardAppearance.lowContrast(themeDraft.palettes[themePalette]);
+}
+function renderPaletteFields(){
+ $('#paletteFields').innerHTML=LocalboardAppearance.colorKeys.map(key=>{
+  const label=t('color'+key[0].toUpperCase()+key.slice(1)),value=themeDraft.palettes[themePalette][key];
+  return `<div class="color-row"><label for="themeHex_${key}">${esc(label)}</label><input id="themeColor_${key}" type="color" value="${value}" aria-label="${esc(label)}"><input id="themeHex_${key}" type="text" value="${value}" pattern="#[0-9a-fA-F]{6}" maxlength="7" spellcheck="false" aria-label="${esc(label)}"></div>`;
+ }).join('');
+ for(const key of LocalboardAppearance.colorKeys){
+  $('#themeColor_'+key).oninput=e=>{$('#themeHex_'+key).value=e.target.value;readThemeColors();previewAppearance();};
+  $('#themeHex_'+key).oninput=()=>{readThemeColors();previewAppearance();};
+ }
+ previewAppearance();
+}
+function updateAppearanceFields(){
+ $('#scheduleFields').hidden=$('#appearanceMode').value!=='schedule';
+ $('#solarFields').hidden=$('#appearanceMode').value!=='solar';
+}
+function editAppearance(){
+ if(!editing)return;
+ themeDraft=LocalboardAppearance.normalize(data.appearance);
+ themePalette=LocalboardAppearance.resolve(themeDraft,new Date(),themeMedia?.matches??true);
+ dialog(t('appearance'),`<p class="note">${esc(t('previewNote'))}</p>
+  <label>${esc(t('themeMode'))}<select id="appearanceMode">${themeOptions(themeDraft.mode)}</select></label>
+  <div id="scheduleFields"><div class="settings-columns"><label>${esc(t('lightAt'))}<input id="lightAt" type="time" value="${themeDraft.lightAt}"></label><label>${esc(t('darkAt'))}<input id="darkAt" type="time" value="${themeDraft.darkAt}"></label></div><p class="note">${esc(t('scheduleNote'))}</p></div>
+  <div id="solarFields"><div class="settings-columns"><label>${esc(t('latitude'))}<input id="latitude" type="number" step="any" min="-90" max="90" value="${themeDraft.location?.latitude??''}"></label><label>${esc(t('longitude'))}<input id="longitude" type="number" step="any" min="-180" max="180" value="${themeDraft.location?.longitude??''}"></label></div><div class="settings-buttons"><button type="button" id="useLocation">${esc(t('useLocation'))}</button><button type="button" id="clearLocation">${esc(t('clearLocation'))}</button></div><p class="note">${esc(t('solarNote'))}</p><p id="locationStatus" class="note" role="status"></p></div>
+  <label>${esc(t('editPalette'))}<select id="appearancePalette"><option value="dark" ${themePalette==='dark'?'selected':''}>${esc(t('themeDark'))}</option><option value="light" ${themePalette==='light'?'selected':''}>${esc(t('themeLight'))}</option></select></label>
+  <div id="paletteFields"></div><p id="contrastWarning" class="note" role="status" hidden>${esc(t('contrastWarning'))}</p><button type="button" id="resetPalette">${esc(t('resetPalette'))}</button>`,()=>{
+   readThemeColors(true);
+   const mode=$('#appearanceMode').value,lightAt=$('#lightAt').value,darkAt=$('#darkAt').value;
+   if(!LocalboardAppearance.timeOK(lightAt)||!LocalboardAppearance.timeOK(darkAt)||lightAt===darkAt)throw uiError('invalidSchedule');
+   const lat=$('#latitude').value.trim(),lon=$('#longitude').value.trim();
+   const location=lat!==''&&lon!==''?{latitude:Number(lat),longitude:Number(lon)}:null;
+   if((lat!==''||lon!=='')&&!LocalboardAppearance.coordinatesOK(location)||mode==='solar'&&!location)throw uiError('invalidLocation');
+   data.appearance=LocalboardAppearance.normalize({...themeDraft,mode,lightAt,darkAt,location});themeDraft=null;
+  });
+ $('#appearanceMode').onchange=updateAppearanceFields;
+ $('#appearancePalette').onchange=e=>{
+  try{readThemeColors(true);}catch(err){e.target.value=themePalette;alert(errorText(err));return;}
+  themePalette=e.target.value;renderPaletteFields();
+ };
+ $('#resetPalette').onclick=()=>{themeDraft.palettes[themePalette]={...LocalboardAppearance.palettes[themePalette]};renderPaletteFields();};
+ $('#clearLocation').onclick=()=>{$('#latitude').value='';$('#longitude').value='';$('#locationStatus').textContent='';};
+ $('#useLocation').onclick=()=>{
+  const draft=themeDraft;
+  if(!navigator.geolocation){$('#locationStatus').textContent=t('locationFailed');return;}
+  $('#useLocation').disabled=true;$('#locationStatus').textContent=t('locationLoading');
+  navigator.geolocation.getCurrentPosition(position=>{
+   if(themeDraft!==draft||!$('#modal').open)return;
+   $('#latitude').value=String(Math.round(position.coords.latitude*1000)/1000);$('#longitude').value=String(Math.round(position.coords.longitude*1000)/1000);
+   $('#useLocation').disabled=false;$('#locationStatus').textContent='';
+  },()=>{if(themeDraft!==draft||!$('#modal').open)return;$('#useLocation').disabled=false;$('#locationStatus').textContent=t('locationFailed');}, {enableHighAccuracy:false,timeout:10000,maximumAge:3600000});
+ };
+ updateAppearanceFields();renderPaletteFields();
+}
+$('#appearance').onclick=editAppearance;
+$('#themeMode').onchange=e=>{
+ const mode=e.target.value;if(!LocalboardAppearance.modes.includes(mode))return;
+ if(mode==='solar'&&!data.appearance.location){e.target.value=data.appearance.mode;message('solarNeedsLocation');return;}
+ data.appearance.mode=mode;persist();render();
+};
+$('#modal').addEventListener('close',()=>{if(themeDraft){themeDraft=null;applyAppearance();}});
+themeMedia?.addEventListener('change',refreshAppearance);
+window.addEventListener('focus',refreshAppearance);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAppearance();});
+setInterval(refreshAppearance,60000);
+
 render();if(startupWarning)message(startupWarning);else if(!seed&&!data.links.length)message('welcome');

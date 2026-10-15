@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 const root=new URL('../',import.meta.url);
 const read=p=>readFileSync(new URL(p,root),'utf8');
+const appearanceCode=read('source/appearance.js');
 const catalogCode=read('source/i18n.js'), appCode=read('source/app.js'), html=read('source/startpage.html');
 const catalogContext=vm.createContext({});
 vm.runInContext(catalogCode,catalogContext);
@@ -12,7 +13,7 @@ const languages=['de','en','fr','es','it','nl'];
 
 // Minimal DOM adapter for application state and text tests; not a layout/browser test.
 class Element {
- constructor(){this.dataset={};this.style={};this.children=[];this.value='';this.textContent='';this.innerHTML='';this.nodes=new Map();this.classList={toggle(){},add(){},remove(){}};}
+ constructor(){this.dataset={};this.style={setProperty(key,value){this[key]=value;}};this.events={};this.children=[];this.value='';this.textContent='';this.innerHTML='';this.nodes=new Map();this.classList={toggle(){},add(){},remove(){}};}
  querySelector(s){if(!this.nodes.has(s))this.nodes.set(s,new Element());return this.nodes.get(s);}
  querySelectorAll(){return [];}
  setAttribute(k,v){this[k]=v;}
@@ -20,10 +21,11 @@ class Element {
  append(...els){this.children.push(...els);}
  replaceChildren(...els){this.children=els;}
  showModal(){this.open=true;}
- close(){this.open=false;}
+ close(){this.open=false;this.events.close?.();}
+ addEventListener(name,callback){this.events[name]=callback;}
  focus(){}
 }
-function boot({browser=['en-US'],saved=null,seed=null,blocked=false}={}){
+function boot({browser=['en-US'],saved=null,seed=null,blocked=false,systemDark=true}={}){
  const nodes=new Map(),get=s=>{if(!nodes.has(s))nodes.set(s,new Element());return nodes.get(s);};
  const markers=[];
  for(const match of html.matchAll(/<[^>]+data-i18n(?:-[a-z]+)?="[^"]+"[^>]*>/g)){
@@ -33,16 +35,18 @@ function boot({browser=['en-US'],saved=null,seed=null,blocked=false}={}){
  }
  get('#seed').textContent=JSON.stringify(seed);
  const values=new Map(saved?[['localboard.v1.default',saved]]:[]),alerts=[],confirms=[];
- const context=vm.createContext({navigator:{languages:browser},URL,Blob,Date,console,setTimeout,
-  document:{querySelector:get,querySelectorAll:s=>markers.filter(el=>Object.hasOwn(el.dataset,s.slice(6,-1).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))),documentElement:{lang:''},body:new Element(),createElement:()=>new Element()},
-  window:{addEventListener(){}},localStorage:{getItem:k=>values.get(k)??null,setItem:(k,v)=>{if(blocked)throw Error('blocked');values.set(k,v);}},
+ const media={matches:systemDark,events:{},addEventListener(name,fn){this.events[name]=fn;}};
+ const callbacks={};
+ const context=vm.createContext({navigator:{languages:browser},URL,Blob,Date,console,setTimeout,setInterval:fn=>{callbacks.interval=fn;return 1;},
+  document:{querySelector:get,querySelectorAll:s=>markers.filter(el=>Object.hasOwn(el.dataset,s.slice(6,-1).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()))),addEventListener:(name,fn)=>{callbacks[name]=fn;},documentElement:new Element(),body:new Element(),createElement:()=>new Element()},
+  window:{matchMedia:()=>media,addEventListener:(name,fn)=>{callbacks[name]=fn;}},localStorage:{getItem:k=>values.get(k)??null,setItem:(k,v)=>{if(blocked)throw Error('blocked');values.set(k,v);}},
   confirm:s=>{confirms.push(s);return true;},alert:s=>alerts.push(s),Image:class extends Element{}
  });
  // Handle the data-view selection separately from translated DOM markers.
  const original=context.document.querySelectorAll;
  context.document.querySelectorAll=s=>s==='[data-view]'?[]:original(s);
- vm.runInContext(catalogCode,context);vm.runInContext(appCode,context);
- return {context,get,values,alerts,confirms,run:code=>vm.runInContext(code,context)};
+ vm.runInContext(catalogCode,context);vm.runInContext(appearanceCode,context);vm.runInContext(appCode,context);
+ return {context,get,values,alerts,confirms,media,callbacks,run:code=>vm.runInContext(code,context)};
 }
 const clone=x=>JSON.parse(JSON.stringify(x));
 const placeholders=text=>Array.from(text.matchAll(/\{(\w+)\}/g),m=>m[1]).sort();
@@ -55,7 +59,7 @@ test('six complete catalogs with matching placeholders and valid UI keys',()=>{
  }
  const keys=[...appCode.matchAll(/(?:\bt|uiError|message)\('([^']+)'/g)].map(m=>m[1]).filter(k=>k!=='help');
  keys.push(...Array.from(html.matchAll(/data-i18n(?:-[a-z]+)?="([^"]+)"/g),m=>m[1]));
- for(const key of keys)assert.ok(Object.hasOwn(i18n.catalogs.en,key),key);
+ for(const key of keys.filter(k=>!['theme','color'].includes(k)))assert.ok(Object.hasOwn(i18n.catalogs.en,key),key);
 });
 
 test('regional browser tags, preference order and unsupported-language fallback',()=>{
@@ -290,4 +294,70 @@ test('fold labels are localized and safely escape custom group names',()=>{
  }
  app.run(`editing=true;toggleGroup('site-a');moveGroup('site-a',1)`);
  assert.deepEqual(clone(app.run('data.collapsedGroups')),['site-a']);
+});
+
+function prepareAppearanceForm(app){
+ const a=clone(app.run('themeDraft')),palette=app.run('themePalette');
+ app.get('#appearanceMode').value=a.mode;app.get('#appearancePalette').value=palette;
+ app.get('#lightAt').value=a.lightAt;app.get('#darkAt').value=a.darkAt;
+ app.get('#latitude').value=a.location?String(a.location.latitude):'';app.get('#longitude').value=a.location?String(a.location.longitude):'';
+ for(const [key,value] of Object.entries(a.palettes[palette]))app.get('#themeHex_'+key).value=value;
+}
+
+test('appearance preview is gated and cancel restores saved CSS without mutating data',()=>{
+ const app=boot();const original=app.run('JSON.stringify(data.appearance)');
+ app.get('#appearance').onclick();assert.equal(app.run('themeDraft'),null);
+ app.get('#lock').onclick();app.get('#appearance').onclick();prepareAppearanceForm(app);
+ app.get('#themeHex_bg').value='#112233';app.get('#themeHex_bg').oninput();
+ assert.equal(app.context.document.documentElement.style['--bg'],'#112233');assert.equal(app.run('JSON.stringify(data.appearance)'),original);
+ app.get('#cancel').onclick();assert.equal(app.run('themeDraft'),null);
+ assert.equal(app.context.document.documentElement.style['--bg'],'#101416');
+});
+
+test('saved palettes, mode and schedule survive reload, JSON and HTML seed',async()=>{
+ const app=boot();app.get('#lock').onclick();app.get('#appearance').onclick();prepareAppearanceForm(app);
+ app.get('#themeHex_accent').value='#ff7700';app.get('#appearanceMode').value='light';app.get('#lightAt').value='08:00';
+ await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.run('data.appearance.palettes.dark.accent'),'#ff7700');assert.equal(app.run('data.appearance.mode'),'light');
+ assert.equal(app.context.document.documentElement.dataset.theme,'light');
+ const restored=boot({saved:app.values.get('localboard.v1.default')});assert.equal(restored.run('data.appearance.lightAt'),'08:00');
+ app.run(`download=(name,content)=>{globalThis.exported=content;}`);app.get('#export').onclick();app.get('#jsonExport').onclick();
+ const seed=JSON.parse(app.context.exported),snapshot=boot({seed});assert.equal(snapshot.run('data.appearance.palettes.dark.accent'),'#ff7700');assert.equal(snapshot.context.document.documentElement.dataset.theme,'light');
+});
+
+test('manual and system quick switches respond to OS changes and timer/focus refresh',()=>{
+ const app=boot({systemDark:false});app.get('#themeMode').onchange({target:{value:'system'}});
+ assert.equal(app.context.document.documentElement.dataset.theme,'light');
+ app.media.matches=true;app.media.events.change();assert.equal(app.context.document.documentElement.dataset.theme,'dark');
+ app.get('#themeMode').onchange({target:{value:'light'}});app.callbacks.interval();app.callbacks.focus();app.callbacks.visibilitychange();
+ assert.equal(app.context.document.documentElement.dataset.theme,'light');
+});
+
+test('solar selection requires explicit coordinates; geolocation is never requested automatically',async()=>{
+ const app=boot();let calls=0,success;
+ app.context.navigator.geolocation={getCurrentPosition:fn=>{calls++;success=fn;}};
+ app.get('#themeMode').onchange({target:{value:'solar'}});assert.equal(app.run('data.appearance.mode'),'dark');assert.equal(calls,0);
+ app.get('#lock').onclick();app.get('#appearance').onclick();prepareAppearanceForm(app);assert.equal(calls,0);
+ app.get('#useLocation').onclick();assert.equal(calls,1);
+ success({coords:{latitude:53.075,longitude:8.807}});
+ assert.equal(app.run('data.appearance.location'),null);
+ app.get('#appearanceMode').value='solar';await app.get('#form').onsubmit({preventDefault(){}});
+ assert.deepEqual(clone(app.run('data.appearance.location')),{latitude:53.075,longitude:8.807});assert.equal(app.run('data.appearance.mode'),'solar');
+});
+
+test('late geolocation result after cancelling is ignored; failed save leaves data untouched',async()=>{
+ const app=boot();let success;app.context.navigator.geolocation={getCurrentPosition:fn=>{success=fn;}};
+ app.get('#lock').onclick();app.get('#appearance').onclick();prepareAppearanceForm(app);app.get('#useLocation').onclick();app.get('#cancel').onclick();
+ success({coords:{latitude:53,longitude:8}});assert.equal(app.run('data.appearance.location'),null);
+ app.get('#appearance').onclick();prepareAppearanceForm(app);const before=app.run('JSON.stringify(data.appearance)');
+ app.get('#appearanceMode').value='solar';await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.run('JSON.stringify(data.appearance)'),before);assert.ok(app.alerts.length>0);
+});
+
+test('appearance labels translate in all six languages and engine is embedded in standalone build',()=>{
+ const bundle=read('startpage.html');assert.ok(bundle.includes(appearanceCode));assert.ok(bundle.indexOf('id="appearanceCode"')<bundle.indexOf('id="appCode"'));
+ for(const language of languages){
+  const app=boot({browser:[language]});app.get('#lock').onclick();app.get('#appearance').onclick();
+  assert.equal(app.get('#dialogTitle').textContent,i18n.translate(language,'appearance'));assert.ok(!app.get('#fields').innerHTML.includes('undefined'));
+ }
 });

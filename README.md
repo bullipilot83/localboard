@@ -4,7 +4,7 @@
 
 local web dashboard, without any hosting or installation
 
-**Version 1.3** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
+**Version 1.4** · Ein portables Browser-Dashboard für Links, Systeme und Standorte.
 
 ## Live-Demo
 
@@ -63,6 +63,35 @@ Ein Klick auf einen Gruppennamen öffnet weiterhin die Gruppe; das Falten verän
 nur die Seitenleiste. Beim Öffnen einer versteckten Untergruppe über ihre Tabs
 werden deren übergeordnete Gruppen automatisch aufgeklappt.
 
+## Design, Hell/Dunkel und automatische Umschaltung
+
+Oben unter **Darstellung** zwischen **Dunkel**, **Hell**, **Betriebssystem**,
+**Uhrzeit** und **Sonnenstand** wechseln. Vorhandene Dashboards behalten zunächst
+wie bisher das dunkle Design.
+
+Für Firmenfarben **Bearbeiten → Design** öffnen. Hell und Dunkel besitzen jeweils
+eine eigene Palette für Seitenhintergrund, Kacheln/Dialoge, Seitenleiste, Text,
+sekundären Text, Akzente und Rahmen. Farben können mit dem Farbwähler oder als
+HEX-Wert eingegeben werden. Die ausgewählte Palette wird direkt als Vorschau
+angezeigt. **Speichern** übernimmt sie; **Abbrechen** oder Escape stellt das
+bisherige Design wieder her. Jede Palette lässt sich separat zurücksetzen.
+Bei geringem Textkontrast erscheint ein Hinweis.
+
+- **Betriebssystem:** folgt der Hell-/Dunkel-Einstellung des Geräts.
+- **Uhrzeit:** zwei Schaltzeiten, bezogen auf die aktuelle Gerätezeitzone.
+- **Sonnenstand:** nutzt manuell eingegebene Koordinaten oder die ausdrücklich
+  angeforderte Browserposition. Berechnet den Tag-/Nachtzustand näherungsweise
+  lokal nach den [NOAA-Sonnenstandsformeln](https://gml.noaa.gov/grad/solcalc/solareqns.PDF).
+  Kein Wetterdienst und kein API-Schlüssel nötig. Die Standortabfrage selbst
+  hängt von Browserberechtigung und verfügbaren Ortungsdiensten ab. Ohne
+  nutzbare Koordinaten in einer importierten Konfiguration gilt der Uhrzeitplan;
+  die Statuszeile weist darauf hin.
+
+Automatische Modi werden minütlich sowie bei Rückkehr zum Dashboard neu geprüft.
+Farben, Modus, Zeiten und gegebenenfalls Koordinaten werden im Browser gespeichert
+und mit JSON/HTML exportiert. CSS-Variablen ändern das Design zur Laufzeit; lokale
+Quelldateien werden nicht überschrieben.
+
 ## Funktionen
 
 - Links per Dialog oder Drag & Drop einer Webadresse hinzufügen.
@@ -101,10 +130,11 @@ erscheint der Anfangsbuchstabe. Keine externen Icon-Dienste oder Telemetrie.
 | `startpage.html` | Vollständige Einzeldatei zum direkten Öffnen |
 | `source/startpage.html` | HTML-Quelle mit separatem JavaScript und CSS |
 | `source/app.js` | Anwendungslogik |
+| `source/appearance.js` | Farbpaletten, Zeitplan und lokale Sonnenstandsberechnung |
 | `source/i18n.js` | Sprachtexte und Spracherkennung für alle sechs Sprachen |
 | `source/style.css` | Gestaltung |
 | `scripts/build.mjs` | Einzeldatei aus den Quellen erzeugen |
-| `tests/i18n.test.mjs` | Tests für Sprachen, Datenmigration und Export |
+| `tests/*.test.mjs` | Tests für Sprachen, Design, Zeitpläne, Datenmigration und Export |
 | `ANLEITUNG.txt` | Ausführliche Bedienung, Grenzen und Update-Hinweise |
 
 ## Entwicklung
@@ -115,7 +145,7 @@ Einzeldatei neu erzeugen:
 ```sh
 node scripts/build.mjs
 node --check source/app.js
-node --test tests/i18n.test.mjs
+node --test tests/*.test.mjs
 ```
 
 Node.js wird nur für diesen Entwicklungsschritt benötigt. Die fertige Anwendung
