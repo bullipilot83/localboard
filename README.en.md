@@ -176,3 +176,5 @@ In edit mode, **Logo & layout** below the logo opens global settings: upload a c
 SVG logos remain vector images (max. 2 MB). Active content and external references are removed; DOCTYPE/entity declarations are rejected. SVG support applies to the custom logo only.
 
 Links can be assigned to **Global / no group**, the default when adding from the overview. Global links appear at the top of the overview, not inside individual locations. They also work without any groups and are included in backups and standalone exports.
+
+For desktop windows at least 1000 CSS pixels wide, the interface defaults to 90% scale. Keep browser zoom at 100% (Ctrl + 0). Narrower windows retain normal sizing.

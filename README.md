@@ -179,3 +179,5 @@ Im Bearbeiten-Modus öffnet **Logo & Layout** unter dem Logo die globalen Einste
 SVG-Logos bleiben Vektorgrafiken (max. 2 MB). Aktive Inhalte und externe Verweise werden entfernt; DOCTYPE-/Entitätsdeklarationen werden abgelehnt. SVG gilt nur für das eigene Logo.
 
 Links können **Global / ohne Gruppe** zugeordnet werden. In der Übersicht ist dies beim Hinzufügen die Vorauswahl. Globale Links erscheinen oben in der Übersicht, nicht in einzelnen Standorten. Sie funktionieren auch ohne angelegte Gruppen und werden in Sicherungen und Standalone-Exporte übernommen.
+
+Auf Desktop-Fenstern ab 1000 CSS-Pixeln Breite wird die Oberfläche standardmäßig mit 90 % dargestellt. Der Browserzoom sollte dafür auf 100 % stehen (Strg + 0). Auf schmaleren Fenstern bleibt die normale Größe erhalten.
