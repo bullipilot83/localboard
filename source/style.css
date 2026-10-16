@@ -41,3 +41,5 @@ nav .group-select.contains-active{box-shadow:inset 2px 0 var(--accent);color:var
 
 /* Keep uploaded branding inside the sidebar without distorting its proportions. */
 .brand .custom-logo{display:block;width:100%;height:auto;max-height:110px;object-fit:contain;object-position:left center}.logo-preview{display:block;max-width:100%;max-height:110px;object-fit:contain}
+
+.github-project{display:inline-flex;align-items:center;gap:8px;padding:6px 0;color:var(--muted);font-size:12px}.github-project svg{flex:none}.github-project:hover,.github-project:focus-visible{color:var(--text);text-decoration:underline;text-underline-offset:3px}
