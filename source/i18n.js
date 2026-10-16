@@ -163,10 +163,11 @@ const catalogs = {
     "invalidLocation": "Bitte beide Koordinaten gültig eingeben oder beide Felder leeren. Für den Sonnenmodus ist ein Standort erforderlich.",
     "branding": "Logo & Layout",
     "customLogo": "Eigenes Logo",
-    "logoNote": "PNG, JPEG oder WebP. Das Logo wird lokal eingebettet und mit exportiert. Eine neue Datei ersetzt das bisherige Logo.",
+    "logoNote": "SVG (max. 2 MB), PNG, JPEG oder WebP. Das Logo wird lokal eingebettet und mit exportiert. Eine neue Datei ersetzt das bisherige Logo.",
     "removeLogo": "Standardlogo wiederherstellen",
     "showEmptyGroups": "Hinweise in leeren Gruppen anzeigen",
-    "emptyGroupsNote": "Deaktivieren, um leere Gruppen nur als Überschrift anzuzeigen. Gilt global für Kacheln und Listen."
+    "emptyGroupsNote": "Deaktivieren, um leere Gruppen nur als Überschrift anzuzeigen. Gilt global für Kacheln und Listen.",
+    "invalidSvgLogo": "Bitte eine gültige SVG-Datei bis 2 MB ohne DOCTYPE oder Entitätsdeklarationen auswählen."
   },
   "en": {
     "pageTitle": "Localboard · Your start page",
@@ -329,10 +330,11 @@ const catalogs = {
     "invalidLocation": "Enter both valid coordinates or clear both fields. Solar mode requires a location.",
     "branding": "Logo & layout",
     "customLogo": "Custom logo",
-    "logoNote": "PNG, JPEG or WebP. The logo is embedded locally and included in exports. A new file replaces the current logo.",
+    "logoNote": "SVG (max. 2 MB), PNG, JPEG or WebP. The logo is embedded locally and included in exports. A new file replaces the current logo.",
     "removeLogo": "Restore default logo",
     "showEmptyGroups": "Show empty group placeholders",
-    "emptyGroupsNote": "Disable to display empty groups as headings only. Applies globally to tiles and lists."
+    "emptyGroupsNote": "Disable to display empty groups as headings only. Applies globally to tiles and lists.",
+    "invalidSvgLogo": "Choose a valid SVG file up to 2 MB without DOCTYPE or entity declarations."
   },
   "fr": {
     "pageTitle": "Localboard · Votre page d’accueil",
@@ -495,10 +497,11 @@ const catalogs = {
     "invalidLocation": "Saisissez deux coordonnées valides ou videz les deux champs. Le mode solaire nécessite un lieu.",
     "branding": "Logo et disposition",
     "customLogo": "Logo personnalisé",
-    "logoNote": "PNG, JPEG ou WebP. Le logo est intégré localement et inclus dans les exports. Un nouveau fichier remplace le logo actuel.",
+    "logoNote": "SVG (max. 2 MB), PNG, JPEG ou WebP. Le logo est intégré localement et inclus dans les exports. Un nouveau fichier remplace le logo actuel.",
     "removeLogo": "Rétablir le logo par défaut",
     "showEmptyGroups": "Afficher les indications dans les groupes vides",
-    "emptyGroupsNote": "Désactivez pour afficher uniquement les titres des groupes vides. Ce réglage s’applique à toutes les tuiles et listes."
+    "emptyGroupsNote": "Désactivez pour afficher uniquement les titres des groupes vides. Ce réglage s’applique à toutes les tuiles et listes.",
+    "invalidSvgLogo": "Choisissez un fichier SVG valide de 2 Mo maximum sans DOCTYPE ni déclaration d’entité."
   },
   "es": {
     "pageTitle": "Localboard · Tu página de inicio",
@@ -661,10 +664,11 @@ const catalogs = {
     "invalidLocation": "Introduce ambas coordenadas válidas o vacía ambos campos. El modo solar requiere ubicación.",
     "branding": "Logo y diseño",
     "customLogo": "Logo personalizado",
-    "logoNote": "PNG, JPEG o WebP. El logo se integra localmente y se incluye en las exportaciones. Un archivo nuevo reemplaza el logo actual.",
+    "logoNote": "SVG (max. 2 MB), PNG, JPEG o WebP. El logo se integra localmente y se incluye en las exportaciones. Un archivo nuevo reemplaza el logo actual.",
     "removeLogo": "Restaurar el logo predeterminado",
     "showEmptyGroups": "Mostrar avisos en grupos vacíos",
-    "emptyGroupsNote": "Desactiva esta opción para mostrar solo los encabezados de los grupos vacíos. Se aplica a todas las vistas de mosaicos y listas."
+    "emptyGroupsNote": "Desactiva esta opción para mostrar solo los encabezados de los grupos vacíos. Se aplica a todas las vistas de mosaicos y listas.",
+    "invalidSvgLogo": "Elige un archivo SVG válido de hasta 2 MB sin DOCTYPE ni declaraciones de entidades."
   },
   "it": {
     "pageTitle": "Localboard · La tua pagina iniziale",
@@ -827,10 +831,11 @@ const catalogs = {
     "invalidLocation": "Inserisci entrambe le coordinate valide o svuota entrambi i campi. La modalità solare richiede una posizione.",
     "branding": "Logo e layout",
     "customLogo": "Logo personalizzato",
-    "logoNote": "PNG, JPEG o WebP. Il logo viene incorporato localmente e incluso nelle esportazioni. Un nuovo file sostituisce il logo attuale.",
+    "logoNote": "SVG (max. 2 MB), PNG, JPEG o WebP. Il logo viene incorporato localmente e incluso nelle esportazioni. Un nuovo file sostituisce il logo attuale.",
     "removeLogo": "Ripristina il logo predefinito",
     "showEmptyGroups": "Mostra gli avvisi nei gruppi vuoti",
-    "emptyGroupsNote": "Disattiva per mostrare solo i titoli dei gruppi vuoti. Si applica a tutte le viste a riquadri e a elenco."
+    "emptyGroupsNote": "Disattiva per mostrare solo i titoli dei gruppi vuoti. Si applica a tutte le viste a riquadri e a elenco.",
+    "invalidSvgLogo": "Scegli un file SVG valido fino a 2 MB senza DOCTYPE o dichiarazioni di entità."
   },
   "nl": {
     "pageTitle": "Localboard · Jouw startpagina",
@@ -993,10 +998,11 @@ const catalogs = {
     "invalidLocation": "Voer beide geldige coördinaten in of maak beide velden leeg. De zonnemodus vereist een locatie.",
     "branding": "Logo en indeling",
     "customLogo": "Eigen logo",
-    "logoNote": "PNG, JPEG of WebP. Het logo wordt lokaal ingesloten en mee geëxporteerd. Een nieuw bestand vervangt het huidige logo.",
+    "logoNote": "SVG (max. 2 MB), PNG, JPEG of WebP. Het logo wordt lokaal ingesloten en mee geëxporteerd. Een nieuw bestand vervangt het huidige logo.",
     "removeLogo": "Standaardlogo herstellen",
     "showEmptyGroups": "Meldingen in lege groepen tonen",
-    "emptyGroupsNote": "Schakel dit uit om lege groepen alleen als koppen te tonen. Geldt voor alle tegel- en lijstweergaven."
+    "emptyGroupsNote": "Schakel dit uit om lege groepen alleen als koppen te tonen. Geldt voor alle tegel- en lijstweergaven.",
+    "invalidSvgLogo": "Kies een geldig SVG-bestand tot 2 MB zonder DOCTYPE of entiteitsdeclaraties."
   }
 };
 

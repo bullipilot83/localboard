@@ -33,7 +33,8 @@ function url(s){
  }catch{throw uiError('urlError');}
 }
 function validate(d){if(!d||d.version!==1||typeof d.id!=='string'||typeof d.revision!=='string'||!Array.isArray(d.groups)||!Array.isArray(d.links)||d.groups.length>1000||d.links.length>10000)throw uiError('invalidFile');
- if(d.logo!=null&&d.logo!==''&&(typeof d.logo!=='string'||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(d.logo)))throw uiError('invalidIcon');
+ if(typeof d.logo==='string'&&d.logo.startsWith('data:image/svg+xml,')){try{d.logo=svgLogo(decodeURIComponent(d.logo.slice(19)));}catch{throw uiError('invalidSvgLogo');}}
+ if(d.logo!=null&&d.logo!==''&&(typeof d.logo!=='string'||!(/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(d.logo)||d.logo.startsWith('data:image/svg+xml,'))))throw uiError('invalidIcon');
  d.logo=d.logo||'';d.showEmptyGroups=d.showEmptyGroups!==false;
  const ids=new Set();for(const g of d.groups){if(!g||typeof g.id!=='string'||ids.has(g.id)||g.id==='all'||typeof g.name!=='string'||g.name.length>160)throw uiError('invalidGroup');ids.add(g.id);if(g.background&&!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(g.background))throw uiError('invalidMap');if(!Number.isFinite(g.ratio)||g.ratio<.1||g.ratio>10)g.ratio=16/9;}
  for(const g of d.groups){let p=g;const seen=new Set([g.id]);while(p.parent){if(!ids.has(p.parent)||seen.has(p.parent))throw uiError('invalidHierarchy');seen.add(p.parent);p=d.groups.find(x=>x.id===p.parent);}}
@@ -129,14 +130,41 @@ function renderBrand(){
 }
 function editBranding(){
  if(!editing)return;
- dialog(t('branding'),`${data.logo?`<img class="logo-preview" src="${esc(data.logo)}" alt="${esc(t('customLogo'))}">`:''}<label>${esc(t('customLogo'))}<input id="logoFile" type="file" accept="image/png,image/jpeg,image/webp"></label><p class="note">${esc(t('logoNote'))}</p>${data.logo?`<label class="check"><input type="checkbox" id="clearLogo">${esc(t('removeLogo'))}</label>`:''}<label class="check"><input type="checkbox" id="showEmptyGroups" ${data.showEmptyGroups?'checked':''}>${esc(t('showEmptyGroups'))}</label><p class="note">${esc(t('emptyGroupsNote'))}</p>`,async()=>{
+ dialog(t('branding'),`${data.logo?`<img class="logo-preview" src="${esc(data.logo)}" alt="${esc(t('customLogo'))}">`:''}<label>${esc(t('customLogo'))}<input id="logoFile" type="file" accept="image/svg+xml,.svg,image/png,image/jpeg,image/webp"></label><p class="note">${esc(t('logoNote'))}</p>${data.logo?`<label class="check"><input type="checkbox" id="clearLogo">${esc(t('removeLogo'))}</label>`:''}<label class="check"><input type="checkbox" id="showEmptyGroups" ${data.showEmptyGroups?'checked':''}>${esc(t('showEmptyGroups'))}</label><p class="note">${esc(t('emptyGroupsNote'))}</p>`,async()=>{
   const showEmptyGroups=$('#showEmptyGroups').checked,clear=$('#clearLogo')?.checked;
-  const uploaded=await imageData($('#logoFile').files[0],640);
+  const uploaded=await logoData($('#logoFile').files[0]);
   data.logo=uploaded?.src||(clear?'':data.logo);
   data.showEmptyGroups=showEmptyGroups;
  });
 }
 $('#branding').onclick=editBranding;
+// SVG logos stay in an image context, never inline in the dashboard DOM.
+function svgLogo(source){
+ if(typeof source!=='string'||source.length>2*1024*1024||/<!DOCTYPE|<!ENTITY/i.test(source))throw uiError('invalidSvgLogo');
+ const doc=new DOMParser().parseFromString(source,'image/svg+xml'),root=doc.documentElement;
+ if(!root||root.localName!=='svg'||root.namespaceURI!=='http://www.w3.org/2000/svg'||doc.getElementsByTagName('parsererror').length)throw uiError('invalidSvgLogo');
+ const allowed=new Set('svg g defs title desc path rect circle ellipse line polyline polygon text tspan textPath use symbol clipPath mask linearGradient radialGradient stop pattern marker filter feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix feDiffuseLighting feDisplacementMap feDistantLight feDropShadow feFlood feFuncA feFuncB feFuncG feFuncR feGaussianBlur feMerge feMergeNode feMorphology feOffset fePointLight feSpecularLighting feSpotLight feTile feTurbulence style'.split(' '));
+ const safeCss=value=>!/[\\@]/.test(value)&&!/(?:expression|javascript)\s*[:(]/i.test(value)&&!Array.from(value.matchAll(/url\s*\(([^)]*)\)/gi)).some(m=>!/^\s*(['"]?)#[\w:.-]+\1\s*$/.test(m[1]));
+ for(const el of [root,...Array.from(root.getElementsByTagName('*'))]){
+  if(el.namespaceURI!=='http://www.w3.org/2000/svg'||!allowed.has(el.localName)){el.parentNode?.removeChild(el);continue;}
+  for(const child of Array.from(el.childNodes))if(child.nodeType===7)el.removeChild(child);
+  for(const attr of Array.from(el.attributes)){
+   const name=attr.localName.toLowerCase();
+   if(name.startsWith('on')||name==='base'||name==='src'||(name==='href'&&!/^#[\w:.-]+$/.test(attr.value))||!safeCss(attr.value))el.removeAttributeNode(attr);
+  }
+  if(el.localName==='style'&&!safeCss(el.textContent))el.parentNode?.removeChild(el);
+ }
+ // Drop processing instructions and declarations outside the root, e.g. XML stylesheets.
+ return 'data:image/svg+xml,'+encodeURIComponent(new XMLSerializer().serializeToString(root));
+}
+async function logoData(file){
+ if(!file)return null;
+ if(file.type==='image/svg+xml'||/\.svg$/i.test(file.name||'')){
+  if(file.size>2*1024*1024)throw uiError('invalidSvgLogo');
+  return {src:svgLogo(await file.text())};
+ }
+ return imageData(file,640);
+}
 async function imageData(file,maxWidth){if(!file)return null;if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>20*1024*1024)throw uiError('imageTypeError');const raw=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(uiError('imageReadError'));r.readAsDataURL(file);});const img=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(uiError('imageReadError'));i.src=raw;});const ratio=img.width/img.height;if(ratio<.1||ratio>10)throw uiError('imageRatioError');const factor=Math.min(1,maxWidth/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*factor);c.height=Math.round(img.height*factor);c.getContext('2d').drawImage(img,0,0,c.width,c.height);return {src:c.toDataURL('image/webp',.85),ratio};}
 function editLink(link,initial='',group){if(link&&!editing)return;if(!data.groups.length){message('createGroupFirst');return;}dialog(link?t('editLink'):t('newLink'),`<label>${esc(t('name'))}<input id="lname" maxlength="160" required value="${esc(link?.name||'')}"></label><label>${esc(t('address'))}<input id="lurl" required placeholder="http://192.168.1.10" value="${esc(link?.url||initial)}"></label><label>${esc(t('group'))}<select id="lgroup">${groupOptions(link?.group||group||(data.active!=='all'?data.active:data.groups[0].id))}</select></label><label class="check"><input type="checkbox" id="lfav" ${link?.favicon?'checked':''}>${esc(t('loadFavicon'))}</label><p class="note">${esc(t('faviconNote'))}</p><label>${esc(t('customIcon'))}<input type="file" id="licon" accept="image/png,image/jpeg,image/webp"></label>${link?.icon?`<label class="check"><input type="checkbox" id="clearIcon">${esc(t('removeIcon'))}</label>`:''}<label>${esc(t('mapPosition'))}<div style="display:flex;gap:8px"><input aria-label="${esc(t('xPosition'))}" id="lx" type="number" min="0" max="100" step="any" value="${link?.x??50}"><input aria-label="${esc(t('yPosition'))}" id="ly" type="number" min="0" max="100" step="any" value="${link?.y??50}"></div></label>`,async()=>{const name=$('#lname').value.trim();if(!name)throw uiError('nameRequired');const u=url($('#lurl').value),uploaded=await imageData($('#licon').files[0],96);const obj={id:link?.id||uid(),name,url:u,group:$('#lgroup').value,favicon:$('#lfav').checked,icon:uploaded?.src||($('#clearIcon')?.checked?'':link?.icon||''),x:Number($('#lx').value),y:Number($('#ly').value)};if(link)Object.assign(link,obj);else data.links.push(obj);},link?()=>{if(editing&&confirm(t('deleteLinkConfirm',{name:link.name}))){data.links=data.links.filter(l=>l!==link);$('#modal').close();persist();render();}}:null);}
 function dashboardTitle(){return data.titleMode==='custom'?data.title:t('defaultTitle');}
