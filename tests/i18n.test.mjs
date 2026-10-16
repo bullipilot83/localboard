@@ -398,3 +398,39 @@ test('legacy branding defaults, safe image validation and heading-only groups',(
  app.get('#search').value='no matching link';app.run('renderContent()');
  assert.match(app.get('#content').innerHTML,/empty/);
 });
+
+test('global links can be created without groups and survive reload, JSON and HTML seeds',async()=>{
+ const app=boot();app.run('data.groups=[];render()');app.get('#add').onclick();
+ assert.equal(app.get('#modal').open,true);assert.match(app.get('#fields').innerHTML,/<option value="all" selected>/);
+ app.get('#lname').value='Global intranet';app.get('#lurl').value='https://example.org';app.get('#lgroup').value='all';app.get('#licon').files=[];
+ await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.alerts.length,0);assert.equal(app.run('data.links[0].group'),'all');
+ assert.equal(app.get('#content').children[0].dataset.group,'all');
+ const saved=app.values.get('localboard.v1.default');assert.equal(boot({saved}).run('data.links[0].group'),'all');
+ app.run("download=(name,content)=>{globalThis.exported=content}");app.get('#export').onclick();app.get('#jsonExport').onclick();
+ const exported=JSON.parse(app.context.exported);assert.equal(exported.links[0].group,'all');assert.equal(boot({seed:exported}).run('data.links[0].group'),'all');
+ assert.throws(()=>app.run("validate({...blank(),links:[{id:'bad',name:'Bad',url:'https://example.org',group:'missing'}]})"));
+});
+
+test('global links stay in the overview in grid/list/map and do not affect group counts',()=>{
+ const app=boot();app.run("data.links=[{id:'global',name:'Global intranet',url:'https://example.org/',group:'all',x:50,y:50},{id:'local',name:'Camera',url:'https://camera.example/',group:'zone-b',x:50,y:50}];render()");
+ assert.equal(app.get('#content').children[0].dataset.group,'all');
+ assert.equal(app.get('#subtitle').textContent,i18n.translate('en','summary',{links:2,groups:4}));
+ app.run("data.views.all='list';renderContent()");assert.equal(app.get('#content').children[0].dataset.group,'all');
+ app.run("data.views.all='map';renderContent()");assert.equal(app.get('#content').children[0].children.length,2);
+ app.run("navigate('site-a')");assert.ok(app.get('#content').children.every(s=>s.dataset.group!=='all'));
+ assert.equal(app.get('#subtitle').textContent,i18n.translate('en','summary',{links:1,groups:3}));
+ app.run("navigate('all');data.views.all='grid'");app.get('#search').value='Global intranet';app.run('renderContent()');
+ assert.equal(app.get('#content').children.length,1);assert.equal(app.get('#content').children[0].dataset.group,'all');
+ app.run("editing=true;editGroup(data.groups.find(g=>g.id==='site-a'))");app.get('#remove').onclick();
+ assert.equal(app.run('data.links.length'),1);assert.equal(app.run('data.links[0].id'),'global');
+});
+
+test('link dialogs default to their context and existing links can move to global',async()=>{
+ const app=boot();app.run("navigate('zone-b');editLink()");assert.match(app.get('#fields').innerHTML,/<option value="zone-b" selected>/);
+ app.run("editing=true;data.links=[{id:'local',name:'Camera',url:'https://example.org/',group:'zone-b'}];editLink(data.links[0])");
+ app.get('#lname').value='Camera';app.get('#lurl').value='https://example.org/';app.get('#lgroup').value='all';app.get('#licon').files=[];
+ await app.get('#form').onsubmit({preventDefault(){}});assert.equal(app.run('data.links[0].group'),'all');
+ app.run('editLink(data.links[0])');assert.match(app.get('#fields').innerHTML,/<option value="all" selected>/);
+ assert.doesNotMatch(app.run("groupOptions(null)"),/value="all"/);
+});

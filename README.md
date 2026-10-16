@@ -177,3 +177,5 @@ verwendeten Browser testen.
 Im Bearbeiten-Modus öffnet **Logo & Layout** unter dem Logo die globalen Einstellungen: eigenes Logo (SVG/PNG/JPEG/WebP, lokal eingebettet) hochladen oder das Standardlogo wiederherstellen. **Hinweise in leeren Gruppen anzeigen** kann deaktiviert werden, damit leere Gruppen in Kachel- und Listenansicht nur als Überschrift erscheinen. Logo und Einstellung werden gespeichert und in JSON-/HTML-Exporte übernommen. Suchrückmeldungen bleiben sichtbar.
 
 SVG-Logos bleiben Vektorgrafiken (max. 2 MB). Aktive Inhalte und externe Verweise werden entfernt; DOCTYPE-/Entitätsdeklarationen werden abgelehnt. SVG gilt nur für das eigene Logo.
+
+Links können **Global / ohne Gruppe** zugeordnet werden. In der Übersicht ist dies beim Hinzufügen die Vorauswahl. Globale Links erscheinen oben in der Übersicht, nicht in einzelnen Standorten. Sie funktionieren auch ohne angelegte Gruppen und werden in Sicherungen und Standalone-Exporte übernommen.

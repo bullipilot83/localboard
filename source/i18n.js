@@ -167,7 +167,8 @@ const catalogs = {
     "removeLogo": "Standardlogo wiederherstellen",
     "showEmptyGroups": "Hinweise in leeren Gruppen anzeigen",
     "emptyGroupsNote": "Deaktivieren, um leere Gruppen nur als Überschrift anzuzeigen. Gilt global für Kacheln und Listen.",
-    "invalidSvgLogo": "Bitte eine gültige SVG-Datei bis 2 MB ohne DOCTYPE oder Entitätsdeklarationen auswählen."
+    "invalidSvgLogo": "Bitte eine gültige SVG-Datei bis 2 MB ohne DOCTYPE oder Entitätsdeklarationen auswählen.",
+    "globalLinks": "Global / ohne Gruppe"
   },
   "en": {
     "pageTitle": "Localboard · Your start page",
@@ -334,7 +335,8 @@ const catalogs = {
     "removeLogo": "Restore default logo",
     "showEmptyGroups": "Show empty group placeholders",
     "emptyGroupsNote": "Disable to display empty groups as headings only. Applies globally to tiles and lists.",
-    "invalidSvgLogo": "Choose a valid SVG file up to 2 MB without DOCTYPE or entity declarations."
+    "invalidSvgLogo": "Choose a valid SVG file up to 2 MB without DOCTYPE or entity declarations.",
+    "globalLinks": "Global / no group"
   },
   "fr": {
     "pageTitle": "Localboard · Votre page d’accueil",
@@ -501,7 +503,8 @@ const catalogs = {
     "removeLogo": "Rétablir le logo par défaut",
     "showEmptyGroups": "Afficher les indications dans les groupes vides",
     "emptyGroupsNote": "Désactivez pour afficher uniquement les titres des groupes vides. Ce réglage s’applique à toutes les tuiles et listes.",
-    "invalidSvgLogo": "Choisissez un fichier SVG valide de 2 Mo maximum sans DOCTYPE ni déclaration d’entité."
+    "invalidSvgLogo": "Choisissez un fichier SVG valide de 2 Mo maximum sans DOCTYPE ni déclaration d’entité.",
+    "globalLinks": "Global / sans groupe"
   },
   "es": {
     "pageTitle": "Localboard · Tu página de inicio",
@@ -668,7 +671,8 @@ const catalogs = {
     "removeLogo": "Restaurar el logo predeterminado",
     "showEmptyGroups": "Mostrar avisos en grupos vacíos",
     "emptyGroupsNote": "Desactiva esta opción para mostrar solo los encabezados de los grupos vacíos. Se aplica a todas las vistas de mosaicos y listas.",
-    "invalidSvgLogo": "Elige un archivo SVG válido de hasta 2 MB sin DOCTYPE ni declaraciones de entidades."
+    "invalidSvgLogo": "Elige un archivo SVG válido de hasta 2 MB sin DOCTYPE ni declaraciones de entidades.",
+    "globalLinks": "Global / sin grupo"
   },
   "it": {
     "pageTitle": "Localboard · La tua pagina iniziale",
@@ -835,7 +839,8 @@ const catalogs = {
     "removeLogo": "Ripristina il logo predefinito",
     "showEmptyGroups": "Mostra gli avvisi nei gruppi vuoti",
     "emptyGroupsNote": "Disattiva per mostrare solo i titoli dei gruppi vuoti. Si applica a tutte le viste a riquadri e a elenco.",
-    "invalidSvgLogo": "Scegli un file SVG valido fino a 2 MB senza DOCTYPE o dichiarazioni di entità."
+    "invalidSvgLogo": "Scegli un file SVG valido fino a 2 MB senza DOCTYPE o dichiarazioni di entità.",
+    "globalLinks": "Globale / senza gruppo"
   },
   "nl": {
     "pageTitle": "Localboard · Jouw startpagina",
@@ -1002,7 +1007,8 @@ const catalogs = {
     "removeLogo": "Standaardlogo herstellen",
     "showEmptyGroups": "Meldingen in lege groepen tonen",
     "emptyGroupsNote": "Schakel dit uit om lege groepen alleen als koppen te tonen. Geldt voor alle tegel- en lijstweergaven.",
-    "invalidSvgLogo": "Kies een geldig SVG-bestand tot 2 MB zonder DOCTYPE of entiteitsdeclaraties."
+    "invalidSvgLogo": "Kies een geldig SVG-bestand tot 2 MB zonder DOCTYPE of entiteitsdeclaraties.",
+    "globalLinks": "Globaal / zonder groep"
   }
 };
 

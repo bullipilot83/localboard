@@ -174,3 +174,5 @@ formats in your chosen browser.
 In edit mode, **Logo & layout** below the logo opens global settings: upload a custom logo (SVG/PNG/JPEG/WebP, embedded locally) or restore the default. Disable **Show empty group placeholders** to display empty groups as headings only in tile and list views. The logo and setting are saved and included in JSON/HTML exports. Search feedback remains visible.
 
 SVG logos remain vector images (max. 2 MB). Active content and external references are removed; DOCTYPE/entity declarations are rejected. SVG support applies to the custom logo only.
+
+Links can be assigned to **Global / no group**, the default when adding from the overview. Global links appear at the top of the overview, not inside individual locations. They also work without any groups and are included in backups and standalone exports.
