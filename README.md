@@ -173,3 +173,5 @@ verwendeten Browser testen.
 ## Lizenz
 
 [CC0 1.0 Universal](LICENSE), entsprechend der vorhandenen Repository-Lizenz.
+
+Im Bearbeiten-Modus öffnet **Logo & Layout** unter dem Logo die globalen Einstellungen: eigenes Logo (PNG/JPEG/WebP, lokal eingebettet) hochladen oder das Standardlogo wiederherstellen. **Hinweise in leeren Gruppen anzeigen** kann deaktiviert werden, damit leere Gruppen in Kachel- und Listenansicht nur als Überschrift erscheinen. Logo und Einstellung werden gespeichert und in JSON-/HTML-Exporte übernommen. Suchrückmeldungen bleiben sichtbar.

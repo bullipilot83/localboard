@@ -160,7 +160,13 @@ const catalogs = {
     "locationLoading": "Standort wird ermittelt …",
     "invalidColors": "Bitte gültige Farben im Format #RRGGBB eingeben.",
     "invalidSchedule": "Bitte zwei unterschiedliche, gültige Uhrzeiten auswählen.",
-    "invalidLocation": "Bitte beide Koordinaten gültig eingeben oder beide Felder leeren. Für den Sonnenmodus ist ein Standort erforderlich."
+    "invalidLocation": "Bitte beide Koordinaten gültig eingeben oder beide Felder leeren. Für den Sonnenmodus ist ein Standort erforderlich.",
+    "branding": "Logo & Layout",
+    "customLogo": "Eigenes Logo",
+    "logoNote": "PNG, JPEG oder WebP. Das Logo wird lokal eingebettet und mit exportiert. Eine neue Datei ersetzt das bisherige Logo.",
+    "removeLogo": "Standardlogo wiederherstellen",
+    "showEmptyGroups": "Hinweise in leeren Gruppen anzeigen",
+    "emptyGroupsNote": "Deaktivieren, um leere Gruppen nur als Überschrift anzuzeigen. Gilt global für Kacheln und Listen."
   },
   "en": {
     "pageTitle": "Localboard · Your start page",
@@ -320,7 +326,13 @@ const catalogs = {
     "locationLoading": "Finding location …",
     "invalidColors": "Enter valid colors in #RRGGBB format.",
     "invalidSchedule": "Choose two different valid times.",
-    "invalidLocation": "Enter both valid coordinates or clear both fields. Solar mode requires a location."
+    "invalidLocation": "Enter both valid coordinates or clear both fields. Solar mode requires a location.",
+    "branding": "Logo & layout",
+    "customLogo": "Custom logo",
+    "logoNote": "PNG, JPEG or WebP. The logo is embedded locally and included in exports. A new file replaces the current logo.",
+    "removeLogo": "Restore default logo",
+    "showEmptyGroups": "Show empty group placeholders",
+    "emptyGroupsNote": "Disable to display empty groups as headings only. Applies globally to tiles and lists."
   },
   "fr": {
     "pageTitle": "Localboard · Votre page d’accueil",
@@ -480,7 +492,13 @@ const catalogs = {
     "locationLoading": "Recherche de la position …",
     "invalidColors": "Saisissez des couleurs au format #RRGGBB.",
     "invalidSchedule": "Choisissez deux horaires valides et différents.",
-    "invalidLocation": "Saisissez deux coordonnées valides ou videz les deux champs. Le mode solaire nécessite un lieu."
+    "invalidLocation": "Saisissez deux coordonnées valides ou videz les deux champs. Le mode solaire nécessite un lieu.",
+    "branding": "Logo et disposition",
+    "customLogo": "Logo personnalisé",
+    "logoNote": "PNG, JPEG ou WebP. Le logo est intégré localement et inclus dans les exports. Un nouveau fichier remplace le logo actuel.",
+    "removeLogo": "Rétablir le logo par défaut",
+    "showEmptyGroups": "Afficher les indications dans les groupes vides",
+    "emptyGroupsNote": "Désactivez pour afficher uniquement les titres des groupes vides. Ce réglage s’applique à toutes les tuiles et listes."
   },
   "es": {
     "pageTitle": "Localboard · Tu página de inicio",
@@ -640,7 +658,13 @@ const catalogs = {
     "locationLoading": "Buscando ubicación …",
     "invalidColors": "Introduce colores válidos en formato #RRGGBB.",
     "invalidSchedule": "Elige dos horas válidas y diferentes.",
-    "invalidLocation": "Introduce ambas coordenadas válidas o vacía ambos campos. El modo solar requiere ubicación."
+    "invalidLocation": "Introduce ambas coordenadas válidas o vacía ambos campos. El modo solar requiere ubicación.",
+    "branding": "Logo y diseño",
+    "customLogo": "Logo personalizado",
+    "logoNote": "PNG, JPEG o WebP. El logo se integra localmente y se incluye en las exportaciones. Un archivo nuevo reemplaza el logo actual.",
+    "removeLogo": "Restaurar el logo predeterminado",
+    "showEmptyGroups": "Mostrar avisos en grupos vacíos",
+    "emptyGroupsNote": "Desactiva esta opción para mostrar solo los encabezados de los grupos vacíos. Se aplica a todas las vistas de mosaicos y listas."
   },
   "it": {
     "pageTitle": "Localboard · La tua pagina iniziale",
@@ -800,7 +824,13 @@ const catalogs = {
     "locationLoading": "Ricerca posizione …",
     "invalidColors": "Inserisci colori validi nel formato #RRGGBB.",
     "invalidSchedule": "Scegli due orari validi e diversi.",
-    "invalidLocation": "Inserisci entrambe le coordinate valide o svuota entrambi i campi. La modalità solare richiede una posizione."
+    "invalidLocation": "Inserisci entrambe le coordinate valide o svuota entrambi i campi. La modalità solare richiede una posizione.",
+    "branding": "Logo e layout",
+    "customLogo": "Logo personalizzato",
+    "logoNote": "PNG, JPEG o WebP. Il logo viene incorporato localmente e incluso nelle esportazioni. Un nuovo file sostituisce il logo attuale.",
+    "removeLogo": "Ripristina il logo predefinito",
+    "showEmptyGroups": "Mostra gli avvisi nei gruppi vuoti",
+    "emptyGroupsNote": "Disattiva per mostrare solo i titoli dei gruppi vuoti. Si applica a tutte le viste a riquadri e a elenco."
   },
   "nl": {
     "pageTitle": "Localboard · Jouw startpagina",
@@ -960,9 +990,16 @@ const catalogs = {
     "locationLoading": "Locatie bepalen …",
     "invalidColors": "Voer geldige kleuren in het formaat #RRGGBB in.",
     "invalidSchedule": "Kies twee verschillende geldige tijden.",
-    "invalidLocation": "Voer beide geldige coördinaten in of maak beide velden leeg. De zonnemodus vereist een locatie."
+    "invalidLocation": "Voer beide geldige coördinaten in of maak beide velden leeg. De zonnemodus vereist een locatie.",
+    "branding": "Logo en indeling",
+    "customLogo": "Eigen logo",
+    "logoNote": "PNG, JPEG of WebP. Het logo wordt lokaal ingesloten en mee geëxporteerd. Een nieuw bestand vervangt het huidige logo.",
+    "removeLogo": "Standaardlogo herstellen",
+    "showEmptyGroups": "Meldingen in lege groepen tonen",
+    "emptyGroupsNote": "Schakel dit uit om lege groepen alleen als koppen te tonen. Geldt voor alle tegel- en lijstweergaven."
   }
 };
+
 const names = {de:'Deutsch',en:'English',fr:'Français',es:'Español',it:'Italiano',nl:'Nederlands'};
 const supported = value => typeof value === 'string' && Object.hasOwn(catalogs, value);
 function detect(languages = []) {

@@ -361,3 +361,40 @@ test('appearance labels translate in all six languages and engine is embedded in
   assert.equal(app.get('#dialogTitle').textContent,i18n.translate(language,'appearance'));assert.ok(!app.get('#fields').innerHTML.includes('undefined'));
  }
 });
+
+test('branding edits are gated, atomic on upload failure, saved and resettable',async()=>{
+ const app=boot();
+ app.run('editBranding()');assert.notEqual(app.get('#modal').open,true);
+ app.run('editing=true;editBranding()');
+ app.get('#logoFile').files=[{}];app.get('#showEmptyGroups').checked=false;
+ app.run("imageData=async()=>{throw uiError('imageReadError')}");
+ await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.run('data.showEmptyGroups'),true);assert.equal(app.run('data.logo'),'');
+ app.run("imageData=async()=>({src:'data:image/png;base64,YQ=='})");
+ await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.run('data.showEmptyGroups'),false);
+ assert.match(app.get('#brand').innerHTML,/custom-logo/);
+ const saved=app.values.get('localboard.v1.default');
+ const reopened=boot({saved});assert.equal(reopened.run('data.logo'),'data:image/png;base64,YQ==');assert.equal(reopened.run('data.showEmptyGroups'),false);
+ const seeded=boot({seed:JSON.parse(saved)});assert.match(seeded.get('#brand').innerHTML,/custom-logo/);
+ app.run('editBranding()');app.get('#cancel').onclick();assert.equal(app.run('data.logo'),'data:image/png;base64,YQ==');
+ app.run('editBranding();imageData=async()=>null');app.get('#logoFile').files=[];app.get('#clearLogo').checked=true;app.get('#showEmptyGroups').checked=true;
+ await app.get('#form').onsubmit({preventDefault(){}});
+ assert.equal(app.run('data.logo'),'');assert.match(app.get('#brand').innerHTML,/localboard/);
+});
+
+test('legacy branding defaults, safe image validation and heading-only groups',()=>{
+ const app=boot();
+ assert.equal(app.run("(()=>{const d=blank();delete d.logo;delete d.showEmptyGroups;return validate(d).showEmptyGroups})()"),true);
+ for(const logo of ['https://example.com/logo.png','data:image/svg+xml;base64,YQ==','\" onerror=alert(1)']){
+  assert.throws(()=>app.run(`validate({...blank(),logo:${JSON.stringify(logo)}})`));
+ }
+ assert.ok(app.get('#content').children.every(s=>s.querySelector('.cards').innerHTML.includes('empty')));
+ app.run('data.showEmptyGroups=false;renderContent()');
+ assert.ok(app.get('#content').children.length>0);
+ for(const section of app.get('#content').children){assert.match(section.innerHTML,/group-head/);assert.equal(section.querySelector('.cards').innerHTML,'');}
+ app.run("data.views.all='list';renderContent()");
+ assert.ok(app.get('#content').children.every(s=>s.querySelector('.cards').innerHTML===''));
+ app.get('#search').value='no matching link';app.run('renderContent()');
+ assert.match(app.get('#content').innerHTML,/empty/);
+});

@@ -170,3 +170,5 @@ formats in your chosen browser.
 ## License
 
 [CC0 1.0 Universal](LICENSE), as specified in the repository's existing license.
+
+In edit mode, **Logo & layout** below the logo opens global settings: upload a custom logo (PNG/JPEG/WebP, embedded locally) or restore the default. Disable **Show empty group placeholders** to display empty groups as headings only in tile and list views. The logo and setting are saved and included in JSON/HTML exports. Search feedback remains visible.
